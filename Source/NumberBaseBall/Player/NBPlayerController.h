@@ -15,6 +15,11 @@ class NUMBERBASEBALL_API ANBPlayerController : public APlayerController
 public:
 	virtual void BeginPlay() override;
 
+	void UpdatePlayerList();
+
+	const FString& GetNickName() const { return NickName; }
+	void SetNickName(FString InNickName) { NickName = InNickName; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NBPlayerController|Widget")
 	TSubclassOf<UUW_Lobby> LobbyWidgetClass;
@@ -27,6 +32,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UUW_GameRoom> GameRoomWidgetInstance;
+
+	FString NickName;
 
 private:
 	void SwapViewportAndSetInputMode(UUserWidget* TargetWidget);
