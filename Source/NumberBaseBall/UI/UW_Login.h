@@ -20,7 +20,7 @@ public:
 	TObjectPtr<UEditableTextBox> ServerIPEditableTextBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UEditableTextBox> NickNameTextBox;
+	TObjectPtr<UEditableTextBox> NickNameEditableTextBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> LoginButton;

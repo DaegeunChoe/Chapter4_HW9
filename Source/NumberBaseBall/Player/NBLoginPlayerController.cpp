@@ -43,5 +43,6 @@ void ANBLoginPlayerController::AddToViewportAndSetInputMode(UUserWidget* TargetW
 		FInputModeUIOnly InputMode;
 		InputMode.SetWidgetToFocus(TargetWidget->GetCachedWidget());
 		SetInputMode(InputMode);
+		bShowMouseCursor = true;
 	}
 }

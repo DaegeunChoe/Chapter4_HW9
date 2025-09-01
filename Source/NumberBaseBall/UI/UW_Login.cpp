@@ -27,10 +27,10 @@ void UUW_Login::OnLoginButtonClicked()
 	ANBLoginPlayerController* LoginPlayerController = GetOwningPlayer<ANBLoginPlayerController>();
 	if (IsValid(LoginPlayerController))
 	{
-		if (IsValid(ServerIPEditableTextBox) && IsValid(NickNameTextBox))
+		if (IsValid(ServerIPEditableTextBox) && IsValid(NickNameEditableTextBox))
 		{
 			FText ServerIP = ServerIPEditableTextBox->GetText();
-			FText NickName = NickNameTextBox->GetText();
+			FText NickName = NickNameEditableTextBox->GetText();
 			LoginPlayerController->JoinServer(ServerIP, NickName);
 		}
 	}
