@@ -25,6 +25,18 @@ protected:
 	TObjectPtr<UUW_Login> LoginWidgetInstance;
 
 private:
-	UUW_Login* CreateLoginWidget();
 	void AddToViewportAndSetInputMode(UUserWidget* TargetWidget);
+
+	template <typename T>
+	T* CheckAndCreateWidget(TSubclassOf<UUserWidget> WidgetClass);
 };
+
+template<typename T>
+inline T* ANBLoginPlayerController::CheckAndCreateWidget(TSubclassOf<UUserWidget> WidgetClass)
+{
+	if (IsValid(WidgetClass))
+	{
+		return CreateWidget<T>(this, WidgetClass);
+	}
+	return nullptr;
+}
