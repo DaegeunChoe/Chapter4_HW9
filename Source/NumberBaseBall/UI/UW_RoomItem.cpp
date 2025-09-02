@@ -1,4 +1,5 @@
 #include "UI/UW_RoomItem.h"
+#include "Player/NBPlayerController.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 
@@ -37,7 +38,9 @@ void UUW_RoomItem::NativeDestruct()
 
 void UUW_RoomItem::OnJoinRoomClicked()
 {
-	// TODO: 저녁에 여기서부터
-	GEngine->AddOnScreenDebugMessage(
-		-1, 10, FColor::Cyan, FString::Printf(TEXT("OnJoinRoomClicked: RoomId: %d"), RoomId));
+	ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
+	if (IsValid(NBPlayerController))
+	{
+		NBPlayerController->ServerRPCJoinRoom(RoomId);
+	}
 }

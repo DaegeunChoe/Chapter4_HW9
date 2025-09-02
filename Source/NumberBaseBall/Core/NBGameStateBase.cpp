@@ -26,6 +26,17 @@ int32 ANBGameStateBase::MakeGameRoom(ANBPlayerController* HostPlayer)
 	return NewRoom.RoomId;
 }
 
+bool ANBGameStateBase::JoinGameRoom(ANBPlayerController* GuestPlayer, int32 TargetRoomId)
+{
+	FGameRoom* GameRoom = GetGameRoom(TargetRoomId);
+	if (GameRoom)
+	{
+		GameRoom->Guest = GuestPlayer;
+		return true;
+	}
+	return false;
+}
+
 void ANBGameStateBase::DestroyGameRoom(int32 TargetRoomId)
 {
 	for (int32 index = 0; index < GameRooms.Num(); index++)

@@ -66,8 +66,29 @@ void ANBGameModeBase::MakeRoom(ANBPlayerController* HostPlayer)
 		if (IsValid(NBPlayerState))
 		{
 			int32 NewRoomId = NBGameStateBase->MakeGameRoom(HostPlayer);
-			NBPlayerState->SetPlayerLocationToGameRoom(NewRoomId);
-			HostPlayer->ClientRPCMakeRoom();
+			if (NewRoomId != -1)
+			{
+				NBPlayerState->SetPlayerLocationToGameRoom(NewRoomId);
+				HostPlayer->ClientRPCMakeRoom();
+			}
+		}
+	}
+}
+
+void ANBGameModeBase::JoinRoom(ANBPlayerController* GuestPlayer, int32 RoomId)
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		ANBPlayerState* NBPlayerState = GuestPlayer->GetPlayerState<ANBPlayerState>();
+		if (IsValid(NBPlayerState))
+		{
+			bool IsSuccess = NBGameStateBase->JoinGameRoom(GuestPlayer, RoomId);
+			if (IsSuccess)
+			{
+				NBPlayerState->SetPlayerLocationToGameRoom(RoomId);
+				GuestPlayer->ClientRPCMakeRoom();
+			}
 		}
 	}
 }

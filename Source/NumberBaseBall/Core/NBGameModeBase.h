@@ -19,6 +19,7 @@ public:
 	TArray<TObjectPtr<ANBPlayerController>> GetPlayersInLobby() const;
 
 	void MakeRoom(ANBPlayerController* HostPlayer);
+	void JoinRoom(ANBPlayerController* GuestPlayer, int32 RoomId);
 	void LeaveRoom(ANBPlayerController* Exiting);
 
 protected:

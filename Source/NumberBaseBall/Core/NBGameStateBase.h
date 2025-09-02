@@ -43,6 +43,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	int32 MakeGameRoom(ANBPlayerController* HostPlayer);
+	bool JoinGameRoom(ANBPlayerController* GuestPlayer, int32 TargetRoomId);
 	void DestroyGameRoom(int32 TargetRoomId);
 	TArray<FGameRoom>& GetGameRoomsRef() { return GameRooms; }
 	FGameRoom* GetGameRoom(int32 TargetRoomId);

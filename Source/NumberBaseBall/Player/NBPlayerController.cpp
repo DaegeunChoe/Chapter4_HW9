@@ -120,6 +120,7 @@ void ANBPlayerController::ServerRPCJoinRoom_Implementation(int32 RoomId)
 		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
 		if (IsValid(NBGameModeBase))
 		{
+			NBGameModeBase->JoinRoom(this, RoomId);
 		}
 	}
 }
