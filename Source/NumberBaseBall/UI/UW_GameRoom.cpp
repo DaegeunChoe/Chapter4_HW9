@@ -27,7 +27,11 @@ void UUW_GameRoom::NativeConstruct()
 
 	if (IsValid(ExitRoomButton))
 	{
-		ExitRoomButton->OnClicked.AddDynamic(this, &ThisClass::OnExitRoomButtonClicked);
+		bool IsAlreadyBounded = ExitRoomButton->OnClicked.IsAlreadyBound(this, &ThisClass::OnExitRoomButtonClicked);;
+		if (!IsAlreadyBounded)
+		{
+			ExitRoomButton->OnClicked.AddDynamic(this, &ThisClass::OnExitRoomButtonClicked);
+		}
 	}
 }
 
@@ -41,6 +45,15 @@ void UUW_GameRoom::NativeDestruct()
 		if (IsAlreadyBounded)
 		{
 			InputEditableTextBox->OnTextCommitted.RemoveDynamic(this, &ThisClass::OnCommitChatMessage);
+		}
+	}
+
+	if (IsValid(ExitRoomButton))
+	{
+		bool IsAlreadyBounded = ExitRoomButton->OnClicked.IsAlreadyBound(this, &ThisClass::OnExitRoomButtonClicked);;
+		if (IsAlreadyBounded)
+		{
+			ExitRoomButton->OnClicked.RemoveDynamic(this, &ThisClass::OnExitRoomButtonClicked);
 		}
 	}
 }
