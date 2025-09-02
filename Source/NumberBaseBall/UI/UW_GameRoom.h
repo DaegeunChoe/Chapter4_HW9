@@ -9,6 +9,7 @@ class UScrollBox;
 class UTextBlock;
 class UEditableTextBox;
 class UButton;
+struct FGameRoom;
 
 UCLASS()
 class NUMBERBASEBALL_API UUW_GameRoom : public UUserWidget
@@ -20,6 +21,8 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
+	void InitTextBlocks();
+	void UpdateGameRoom(const FGameRoom* GameRoomInfo);
 	void AddChatMessage(const FText& NewChatMessage);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
@@ -29,7 +32,10 @@ public:
 	TObjectPtr<UTextBlock> ChatTextBlock;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UTextBlock> MyNickNameTextBlock;
+	TObjectPtr<UTextBlock> HostTextBlock;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UTextBlock> GuestTextBlock;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UEditableTextBox> InputEditableTextBox;

@@ -20,7 +20,8 @@ public:
 
 	void UpdatePlayerList(const TArray<const FString>& NickNames);
 	void UpdateMyNickName(const FString& MyNickName);
-	void UpdateRoom(const TArray<FGameRoom>& GameRooms);
+	void UpdateRooms(const TArray<FGameRoom>& GameRooms);
+	void UpdateGameRoomInfo(const FGameRoom* GameRoom);
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPCSendChatMessage(const FText& ChatMessage);
@@ -76,8 +77,6 @@ private:
 
 	template <typename T>
 	T* GetGameState();
-
-	FTimerHandle LatePlayerStateUpdateHandle;
 };
 
 template<typename T>

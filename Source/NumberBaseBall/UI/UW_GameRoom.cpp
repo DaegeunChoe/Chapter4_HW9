@@ -1,4 +1,5 @@
 #include "UI/UW_GameRoom.h"
+#include "Core/NBGameStateBase.h"
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
 #include "Components/VerticalBox.h"
@@ -55,6 +56,57 @@ void UUW_GameRoom::NativeDestruct()
 		{
 			ExitRoomButton->OnClicked.RemoveDynamic(this, &ThisClass::OnExitRoomButtonClicked);
 		}
+	}
+}
+
+void UUW_GameRoom::InitTextBlocks()
+{
+	if (IsValid(ChatTextBlock))
+	{
+		ChatTextBlock->SetText(FText::FromString(TEXT("[NumberBaseBall GameRoom]")));
+	}
+	if (IsValid(HostTextBlock))
+	{
+		HostTextBlock->SetText(FText::FromString(TEXT("Host: ...")));
+	}
+	if (IsValid(GuestTextBlock))
+	{
+		GuestTextBlock->SetText(FText::FromString(TEXT("Guest: ...")));
+	}
+}
+
+void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
+{
+	if (IsValid(HostTextBlock))
+	{
+		FString HostNickName;
+		if (GameRoomInfo)
+		{
+			if (IsValid(GameRoomInfo->HostState))
+			{
+				HostNickName = GameRoomInfo->HostState->GetNickName();
+			}
+		}
+		FString FormatText = FString::Printf(TEXT("Host: %s"), *HostNickName);
+
+		FText HostText = FText::FromString(FormatText);
+		HostTextBlock->SetText(HostText);
+	}
+
+	if (IsValid(GuestTextBlock))
+	{
+		FString GuestNickName;
+		if (GameRoomInfo)
+		{
+			if (IsValid(GameRoomInfo->GuestState))
+			{
+				GuestNickName = GameRoomInfo->GuestState->GetNickName();
+			}
+		}
+		FString FormatText = FString::Printf(TEXT("Guest: %s"), *GuestNickName);
+
+		FText GuestText = FText::FromString(FormatText);
+		GuestTextBlock->SetText(GuestText);
 	}
 }
 

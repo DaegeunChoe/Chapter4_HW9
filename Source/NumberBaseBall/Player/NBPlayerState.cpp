@@ -19,6 +19,11 @@ void ANBPlayerState::BeginDestroy()
 {
 	Super::BeginDestroy();
 
+	if (LatePlayerStateUpdateHandle.IsValid())
+	{
+		LatePlayerStateUpdateHandle.Invalidate();
+	}
+
 	NotifyToLocalPlayerController();
 }
 
@@ -34,10 +39,16 @@ void ANBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, NickName);
+	DOREPLIFETIME(ThisClass, RoomId);
 }
 
 
 void ANBPlayerState::OnRep_NickName()
+{
+	NotifyToLocalPlayerController();
+}
+
+void ANBPlayerState::OnRep_RoomId()
 {
 	NotifyToLocalPlayerController();
 }
@@ -51,23 +62,69 @@ void ANBPlayerState::NotifyToLocalPlayerController()
 {
 	if (!HasAuthority())
 	{
+		if (GetWorld())
 		{
-			APlayerController* LocalPlayerController = UGameplayStatics::GetPlayerController(this, 0);
-			ANBPlayerController* NBPlayerController = Cast<ANBPlayerController>(LocalPlayerController);
-			if (IsValid(NBPlayerController))
+			if (LatePlayerStateUpdateHandle.IsValid())
 			{
-				NBPlayerController->UpdatePlayerList(GetPlayerNickNames());
+				GetWorldTimerManager().ClearTimer(LatePlayerStateUpdateHandle);
 			}
-		}
-		{
-			ANBPlayerController* NBPlayerController = GetOwner<ANBPlayerController>();
-			if (IsValid(NBPlayerController))
-			{
-				NBPlayerController->UpdateMyNickName(GetNickName());
-			}
+
+			GetWorldTimerManager().SetTimer(LatePlayerStateUpdateHandle, this, &ThisClass::TryNotifyToLocalPlayerController, 0.5f, true);
 		}
 	}
 }
+
+void ANBPlayerState::TryNotifyToLocalPlayerController()
+{
+	if (!HasAuthority())
+	{
+		bool HasUpdate = true;
+		APlayerController* LocalPlayerController = UGameplayStatics::GetPlayerController(this, 0);
+		ANBPlayerController* NBPlayerController = Cast<ANBPlayerController>(LocalPlayerController);
+		if (IsValid(NBPlayerController))
+		{
+			NBPlayerController->UpdatePlayerList(GetPlayerNickNames());
+
+			UWorld* World = GetWorld();
+			if (RoomId != -1 && IsValid(World))
+			{
+				ANBGameStateBase* NBGameStateBase = World->GetGameState<ANBGameStateBase>();
+				if (IsValid(NBGameStateBase))
+				{
+					FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+					if (GameRoom)
+					{
+						NBPlayerController->UpdateGameRoomInfo(GameRoom);
+					}
+					else
+					{
+						HasUpdate = false;
+					}
+				}
+				else
+				{
+					HasUpdate = false;
+				}
+			}
+		}
+		else
+		{
+			HasUpdate = false;
+		}
+
+		ANBPlayerController* OwnerPlayerController = GetOwner<ANBPlayerController>();
+		if (IsValid(OwnerPlayerController))
+		{
+			OwnerPlayerController->UpdateMyNickName(GetNickName());
+		}
+		
+		if (HasUpdate)
+		{
+			GetWorldTimerManager().ClearTimer(LatePlayerStateUpdateHandle);
+		}
+	}
+}
+
 
 void ANBPlayerState::SetPlayerLocationToLobby()
 {

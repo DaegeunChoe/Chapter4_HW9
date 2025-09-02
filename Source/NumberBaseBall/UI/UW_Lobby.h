@@ -23,6 +23,7 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
+	void InitTextBlocks();
 	void UpdatePlayerList(const TArray<const FString>& NickNames);
 	void UpdateMyNickName(const FString& MyNickName);
 	void UpdateRoomList(const TArray<FGameRoom>& GameRooms);

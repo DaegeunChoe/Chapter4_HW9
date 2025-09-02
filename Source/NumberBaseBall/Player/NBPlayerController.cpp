@@ -21,11 +21,6 @@ void ANBPlayerController::BeginPlay()
 void ANBPlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-
-	if (LatePlayerStateUpdateHandle.IsValid())
-	{
-		LatePlayerStateUpdateHandle.Invalidate();
-	}
 }
 
 void ANBPlayerController::UpdatePlayerList(const TArray<const FString>& NickNames)
@@ -50,13 +45,30 @@ void ANBPlayerController::UpdateMyNickName(const FString& MyNickName)
 	}
 }
 
-void ANBPlayerController::UpdateRoom(const TArray<FGameRoom>& GameRooms)
+void ANBPlayerController::UpdateRooms(const TArray<FGameRoom>& GameRooms)
 {
 	if (!HasAuthority())
 	{
 		if (IsValid(LobbyWidgetInstance))
 		{
-			LobbyWidgetInstance->UpdateRoomList(GameRooms);
+			if (LobbyWidgetInstance->IsInViewport())
+			{
+				LobbyWidgetInstance->UpdateRoomList(GameRooms);
+			}
+		}
+	}
+}
+
+void ANBPlayerController::UpdateGameRoomInfo(const FGameRoom* GameRoom)
+{
+	if (GameRoom)
+	{
+		if (IsValid(GameRoomWidgetInstance))
+		{
+			if (GameRoomWidgetInstance->IsInViewport())
+			{
+				GameRoomWidgetInstance->UpdateGameRoom(GameRoom);
+			}
 		}
 	}
 }
@@ -164,24 +176,6 @@ void ANBPlayerController::ClientRPCLeaveRoom_Implementation()
 void ANBPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
-	// TODO: 시간이 남으면 리팩토링..
-	GetWorldTimerManager().SetTimer(LatePlayerStateUpdateHandle,
-		[WeakThis = TWeakObjectPtr<ANBPlayerController>(this)]()
-		{
-			if (WeakThis.IsValid())
-			{
-				ANBPlayerController* NBPlayerController = WeakThis.Get();
-				if (IsValid(NBPlayerController))
-				{
-					ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
-					if (IsValid(NBPlayerState))
-					{
-						NBPlayerState->NotifyToLocalPlayerController();
-					}
-				}
-			}
-		}, 1.0f, false);
 }
 
 void ANBPlayerController::SwapViewportAndSetInputMode(UUserWidget* TargetWidget)
@@ -189,10 +183,12 @@ void ANBPlayerController::SwapViewportAndSetInputMode(UUserWidget* TargetWidget)
 	if (LobbyWidgetInstance->IsInViewport())
 	{
 		LobbyWidgetInstance->RemoveFromParent();
+		LobbyWidgetInstance->InitTextBlocks();
 	}
 	if (GameRoomWidgetInstance->IsInViewport())
 	{
 		GameRoomWidgetInstance->RemoveFromParent();
+		GameRoomWidgetInstance->InitTextBlocks();
 	}
 
 	if (IsValid(TargetWidget))

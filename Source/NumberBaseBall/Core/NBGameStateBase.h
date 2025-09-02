@@ -5,6 +5,7 @@
 #include "NBGameStateBase.generated.h"
 
 class ANBPlayerController;
+class ANBPlayerState;
 
 USTRUCT()
 struct FGameRoom
@@ -32,6 +33,12 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<ANBPlayerController> Guest;
+
+	UPROPERTY()
+	TObjectPtr<ANBPlayerState> HostState;
+
+	UPROPERTY()
+	TObjectPtr<ANBPlayerState> GuestState;
 };
 
 UCLASS()

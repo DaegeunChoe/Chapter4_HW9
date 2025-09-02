@@ -64,6 +64,18 @@ void UUW_Lobby::NativeDestruct()
 	}
 }
 
+void UUW_Lobby::InitTextBlocks()
+{
+	if (IsValid(ChatTextBlock))
+	{
+		ChatTextBlock->SetText(FText::FromString(TEXT("[NumberBaseBall Lobby]")));
+	}
+	if (IsValid(MyNickNameTextBlock))
+	{
+		MyNickNameTextBlock->SetText(FText::FromString(TEXT("(Connecting...)")));
+	}
+}
+
 void UUW_Lobby::UpdatePlayerList(const TArray<const FString>& NickNames)
 {
 	if (IsValid(UserListBox))

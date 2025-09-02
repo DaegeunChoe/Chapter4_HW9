@@ -42,14 +42,21 @@ protected:
 	UPROPERTY(Replicated)
 	EPlayerLocation PlayerLocation;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_RoomId)
 	int32 RoomId;
 
 private:
 	UFUNCTION()
 	void OnRep_NickName();
 
+	UFUNCTION()
+	void OnRep_RoomId();
+
 	virtual void OnRep_Owner() override;
 
 	TArray<const FString> GetPlayerNickNames();
+
+	void TryNotifyToLocalPlayerController();
+
+	FTimerHandle LatePlayerStateUpdateHandle;
 };
