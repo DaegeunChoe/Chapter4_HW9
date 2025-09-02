@@ -121,6 +121,11 @@ void ANBGameModeBase::LeaveRoom(ANBPlayerController* Exiting)
 					else if (GameRoom->Guest == Exiting)
 					{
 						GameRoom->Guest = nullptr;
+						GameRoom->GuestState = nullptr;
+						if (IsValid(GameRoom->Host))
+						{
+							GameRoom->Host->ClientRPCGuestLeavesRoom();
+						}
 					}
 				}
 			}

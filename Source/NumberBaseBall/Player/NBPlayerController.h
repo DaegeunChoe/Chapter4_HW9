@@ -47,6 +47,9 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPCLeaveRoom();
 
+	UFUNCTION(Client, Reliable)
+	void ClientRPCGuestLeavesRoom();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NBPlayerController|Widget")
 	TSubclassOf<UUW_Lobby> LobbyWidgetClass;

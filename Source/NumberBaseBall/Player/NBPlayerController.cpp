@@ -173,6 +173,18 @@ void ANBPlayerController::ClientRPCLeaveRoom_Implementation()
 	}
 }
 
+void ANBPlayerController::ClientRPCGuestLeavesRoom_Implementation()
+{
+	if (!HasAuthority())
+	{
+		ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
+		if (IsValid(NBPlayerState))
+		{
+			NBPlayerState->NotifyToLocalPlayerController();
+		}
+	}
+}
+
 void ANBPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
