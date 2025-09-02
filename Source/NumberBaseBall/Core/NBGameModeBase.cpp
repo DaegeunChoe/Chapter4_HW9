@@ -28,6 +28,13 @@ void ANBGameModeBase::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 
+	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(Exiting);
+	ANBPlayerState* NBPlayerState = PlayerController->GetPlayerState<ANBPlayerState>();
+	FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
+	FString FormatText = FString::Printf(TEXT("%s has left."), *NickName);
+	FText Notification = FText::FromString(FormatText);
+
+	SendNotificationToLobby(Notification);
 	RemovePlayerList(Exiting);
 }
 
