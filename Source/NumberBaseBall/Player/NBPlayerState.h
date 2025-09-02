@@ -23,8 +23,11 @@ protected:
 	FString NickName;
 
 private:
-	void NotifyToLocalPlayerController();
-	
 	UFUNCTION()
 	void OnRep_NickName();
+
+	virtual void OnRep_Owner() override;
+
+	void NotifyToLocalPlayerController();
+	TArray<const FString> GetPlayerNickNames();
 };

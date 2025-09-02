@@ -19,7 +19,8 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
-	void UpdatePlayerList(TArray<FString> NickNames);
+	void UpdatePlayerList(const TArray<const FString>& NickNames);
+	void UpdateMyNickName(const FString& MyNickName);
 	void AddChatMessage(const FText& NewChatMessage);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
@@ -30,6 +31,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> ChatTextBlock;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UTextBlock> MyNickNameTextBlock;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UEditableTextBox> InputEditableTextBox;

@@ -1,6 +1,5 @@
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
-#include "Core/NBGameStateBase.h"
 #include "Core/NBGameModeBase.h"
 #include "UI/UW_Lobby.h"
 #include "UI/UW_GameRoom.h"
@@ -18,14 +17,24 @@ void ANBPlayerController::BeginPlay()
 	}
 }
 
-void ANBPlayerController::UpdatePlayerList()
+void ANBPlayerController::UpdatePlayerList(const TArray<const FString>& NickNames)
 {
 	if (!HasAuthority())
 	{
-		TArray<FString> NickNames = GetPlayerNickNames();
 		if (IsValid(LobbyWidgetInstance))
 		{
 			LobbyWidgetInstance->UpdatePlayerList(NickNames);
+		}
+	}
+}
+
+void ANBPlayerController::UpdateMyNickName(const FString& MyNickName)
+{
+	if (!HasAuthority())
+	{
+		if (IsValid(LobbyWidgetInstance))
+		{
+			LobbyWidgetInstance->UpdateMyNickName(MyNickName);
 		}
 	}
 }
@@ -80,28 +89,4 @@ void ANBPlayerController::SwapViewportAndSetInputMode(UUserWidget* TargetWidget)
 		SetInputMode(InputMode);
 		bShowMouseCursor = true;
 	}
-}
-
-TArray<FString> ANBPlayerController::GetPlayerNickNames()
-{
-	TArray<FString> NickNameArray;
-
-	UWorld* World = GetWorld();
-	if (IsValid(World))
-	{
-		ANBGameStateBase* NBGameStateBase = World->GetGameState<ANBGameStateBase>();
-		if (IsValid(NBGameStateBase))
-		{
-			for (auto& OtherPlayerState : NBGameStateBase->PlayerArray)
-			{
-				ANBPlayerState* NBPlayerState = Cast<ANBPlayerState>(OtherPlayerState);
-				if (IsValid(NBPlayerState))
-				{
-					NickNameArray.Emplace(NBPlayerState->GetNickName());
-				}
-			}
-		}
-	}
-	NickNameArray.Sort();
-	return NickNameArray;
 }

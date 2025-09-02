@@ -40,17 +40,25 @@ void UUW_Lobby::NativeDestruct()
 	}
 }
 
-void UUW_Lobby::UpdatePlayerList(TArray<FString> NickNames)
+void UUW_Lobby::UpdatePlayerList(const TArray<const FString>& NickNames)
 {
 	if (IsValid(UserListBox))
 	{
 		UserListBox->ClearChildren();
-		for (FString& NickName : NickNames)
+		for (const FString& NickName : NickNames)
 		{
 			UTextBlock* TextBlockWidget = WidgetTree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass());
 			TextBlockWidget->SetText(FText::FromString(NickName));
 			UserListBox->AddChildToVerticalBox(TextBlockWidget);
 		}
+	}
+}
+
+void UUW_Lobby::UpdateMyNickName(const FString& MyNickName)
+{
+	if (IsValid(MyNickNameTextBlock))
+	{
+		MyNickNameTextBlock->SetText(FText::FromString(MyNickName));
 	}
 }
 

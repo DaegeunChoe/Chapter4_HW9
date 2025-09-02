@@ -15,7 +15,8 @@ class NUMBERBASEBALL_API ANBPlayerController : public APlayerController
 public:
 	virtual void BeginPlay() override;
 
-	void UpdatePlayerList();
+	void UpdatePlayerList(const TArray<const FString>& NickNames);
+	void UpdateMyNickName(const FString& MyNickName);
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPCSendChatMessage(const FText& ChatMessage);
