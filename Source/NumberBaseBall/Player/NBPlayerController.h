@@ -32,6 +32,7 @@ protected:
 
 private:
 	void SwapViewportAndSetInputMode(UUserWidget* TargetWidget);
+	TArray<FString> GetPlayerNickNames();
 
 	template <typename T>
 	T* CheckAndCreateWidget(TSubclassOf<UUserWidget> WidgetClass);

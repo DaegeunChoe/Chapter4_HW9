@@ -18,10 +18,40 @@ void ANBPlayerController::BeginPlay()
 
 void ANBPlayerController::UpdatePlayerList()
 {
-	if (HasAuthority())
+	if (!HasAuthority())
 	{
-		return;
+		TArray<FString> NickNames = GetPlayerNickNames();
+		if (IsValid(LobbyWidgetInstance))
+		{
+			LobbyWidgetInstance->UpdatePlayerList(NickNames);
+		}
 	}
+}
+
+void ANBPlayerController::SwapViewportAndSetInputMode(UUserWidget* TargetWidget)
+{
+	if (LobbyWidgetInstance->IsInViewport())
+	{
+		LobbyWidgetInstance->RemoveFromParent();
+	}
+	if (GameRoomWidgetInstance->IsInViewport())
+	{
+		GameRoomWidgetInstance->RemoveFromParent();
+	}
+
+	if (IsValid(TargetWidget))
+	{
+		TargetWidget->AddToViewport(0);
+		FInputModeUIOnly InputMode;
+		InputMode.SetWidgetToFocus(TargetWidget->GetCachedWidget());
+		SetInputMode(InputMode);
+		bShowMouseCursor = true;
+	}
+}
+
+TArray<FString> ANBPlayerController::GetPlayerNickNames()
+{
+	TArray<FString> NickNameArray;
 
 	UWorld* World = GetWorld();
 	if (IsValid(World))
@@ -34,31 +64,11 @@ void ANBPlayerController::UpdatePlayerList()
 				ANBPlayerState* NBPlayerState = Cast<ANBPlayerState>(OtherPlayerState);
 				if (IsValid(NBPlayerState))
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue,
-						FString::Printf(TEXT("Users: %s"), *NBPlayerState->GetNickName()));
+					NickNameArray.Emplace(NBPlayerState->GetNickName());
 				}
 			}
 		}
 	}
-}
-
-void ANBPlayerController::SwapViewportAndSetInputMode(UUserWidget* TargetWidget)
-{
-	if (LobbyWidgetInstance->IsInViewport())
-	{
-		LobbyWidgetInstance->RemoveFromViewport();
-	}
-	if (GameRoomWidgetInstance->IsInViewport())
-	{
-		GameRoomWidgetInstance->RemoveFromViewport();
-	}
-
-	if (IsValid(TargetWidget))
-	{
-		TargetWidget->AddToViewport(0);
-		FInputModeUIOnly InputMode;
-		InputMode.SetWidgetToFocus(TargetWidget->GetCachedWidget());
-		SetInputMode(InputMode);
-		bShowMouseCursor = true;
-	}
+	NickNameArray.Sort();
+	return NickNameArray;
 }
