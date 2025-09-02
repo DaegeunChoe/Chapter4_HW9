@@ -4,6 +4,7 @@
 #include "UI/UW_Lobby.h"
 #include "UI/UW_GameRoom.h"
 #include "Kismet/GameplayStatics.h"
+#include "UObject/WeakObjectPtrTemplates.h"
 
 void ANBPlayerController::BeginPlay()
 {
@@ -14,6 +15,16 @@ void ANBPlayerController::BeginPlay()
 		LobbyWidgetInstance = CheckAndCreateWidget<UUW_Lobby>(LobbyWidgetClass);
 		GameRoomWidgetInstance = CheckAndCreateWidget<UUW_GameRoom>(GameRoomWidgetClass);
 		SwapViewportAndSetInputMode(LobbyWidgetInstance);
+	}
+}
+
+void ANBPlayerController::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (LatePlayerStateUpdateHandle.IsValid())
+	{
+		LatePlayerStateUpdateHandle.Invalidate();
 	}
 }
 
@@ -74,11 +85,23 @@ void ANBPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
-	if (IsValid(NBPlayerState))
-	{
-		NBPlayerState->NotifyToLocalPlayerController();
-	}
+	// TODO: 시간이 남으면 리팩토링..
+	GetWorldTimerManager().SetTimer(LatePlayerStateUpdateHandle,
+		[WeakThis = TWeakObjectPtr<ANBPlayerController>(this)]()
+		{
+			if (WeakThis.IsValid())
+			{
+				ANBPlayerController* NBPlayerController = WeakThis.Get();
+				if (IsValid(NBPlayerController))
+				{
+					ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
+					if (IsValid(NBPlayerState))
+					{
+						NBPlayerState->NotifyToLocalPlayerController();
+					}
+				}
+			}
+		}, 1.0f, false);
 }
 
 void ANBPlayerController::SwapViewportAndSetInputMode(UUserWidget* TargetWidget)

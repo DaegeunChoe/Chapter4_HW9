@@ -14,6 +14,7 @@ class NUMBERBASEBALL_API ANBPlayerController : public APlayerController
 	
 public:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	void UpdatePlayerList(const TArray<const FString>& NickNames);
 	void UpdateMyNickName(const FString& MyNickName);
@@ -45,6 +46,9 @@ private:
 
 	template <typename T>
 	T* CheckAndCreateWidget(TSubclassOf<UUserWidget> WidgetClass);
+
+
+	FTimerHandle LatePlayerStateUpdateHandle;
 };
 
 template<typename T>
