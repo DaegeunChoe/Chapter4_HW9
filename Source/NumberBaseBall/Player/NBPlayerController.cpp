@@ -81,6 +81,18 @@ void ANBPlayerController::ClientRPCReceiveChatMessage_Implementation(const FText
 	}
 }
 
+void ANBPlayerController::ServerRPCMakeRoom_Implementation()
+{
+}
+
+void ANBPlayerController::ServerRPCJoinRoom_Implementation(int32 RoomId)
+{
+}
+
+void ANBPlayerController::ServerRPCLeaveRoom_Implementation()
+{
+}
+
 void ANBPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();

@@ -5,6 +5,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
 #include "Components/EditableTextBox.h"
+#include "Components/Button.h"
 #include "Blueprint/WidgetTree.h"
 
 UUW_Lobby::UUW_Lobby(const FObjectInitializer& ObjectInitializer)
@@ -16,13 +17,18 @@ void UUW_Lobby::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (InputEditableTextBox)
+	if (IsValid(InputEditableTextBox))
 	{
 		bool IsAlreadyBounded = InputEditableTextBox->OnTextCommitted.IsAlreadyBound(this, &ThisClass::OnCommitChatMessage);
 		if (!IsAlreadyBounded)
 		{
 			InputEditableTextBox->OnTextCommitted.AddDynamic(this, &ThisClass::OnCommitChatMessage);
 		}
+	}
+
+	if (IsValid(MakeRoomButton))
+	{
+		MakeRoomButton->OnClicked.AddDynamic(this, &ThisClass::OnMakeRoomClicked);
 	}
 }
 
@@ -80,6 +86,14 @@ void UUW_Lobby::OnCommitChatMessage(const FText& Text, ETextCommit::Type CommitM
 		{
 			InputEditableTextBox->SetText(FText());
 		}
+	}
+}
+
+void UUW_Lobby::OnMakeRoomClicked()
+{
+	ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
+	if (IsValid(NBPlayerController))
+	{
 	}
 }
 

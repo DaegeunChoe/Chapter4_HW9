@@ -25,6 +25,15 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPCReceiveChatMessage(const FText& ChatMessage);
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPCMakeRoom();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPCJoinRoom(int32 RoomId);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPCLeaveRoom();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NBPlayerController|Widget")
 	TSubclassOf<UUW_Lobby> LobbyWidgetClass;

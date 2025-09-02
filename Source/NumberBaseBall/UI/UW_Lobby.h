@@ -8,6 +8,7 @@ class UVerticalBox;
 class UScrollBox;
 class UTextBlock;
 class UEditableTextBox;
+class UButton;
 
 UCLASS()
 class NUMBERBASEBALL_API UUW_Lobby : public UUserWidget
@@ -38,7 +39,13 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UEditableTextBox> InputEditableTextBox;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UButton> MakeRoomButton;
+
 private:
 	UFUNCTION()
 	void OnCommitChatMessage(const FText& Text, ETextCommit::Type CommitMethod);
+
+	UFUNCTION()
+	void OnMakeRoomClicked();
 };

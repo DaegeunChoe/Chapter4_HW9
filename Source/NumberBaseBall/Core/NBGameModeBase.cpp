@@ -6,7 +6,7 @@
 APlayerController* ANBGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
 	APlayerController* NewPlayerController = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
-	SetNickNameFromOptions(NewPlayerController, Options);
+	InitPlayerStateUsingOptions(NewPlayerController, Options);
 	return NewPlayerController;
 }
 
@@ -40,12 +40,23 @@ void ANBGameModeBase::Logout(AController* Exiting)
 
 TArray<TObjectPtr<ANBPlayerController>> ANBGameModeBase::GetPlayersInLobby() const
 {
-	// TODO 나중에 로비에 있는 플레이어만 선별해야 함
-	return PlayerList;
+	TArray<TObjectPtr<ANBPlayerController>> InLobby;
+	for (ANBPlayerController* PlayerController : PlayerList)
+	{
+		ANBPlayerState* NBPlayerState = PlayerController->GetPlayerState<ANBPlayerState>();
+		if (IsValid(NBPlayerState))
+		{
+			if (NBPlayerState->GetPlayerLocation() == EPlayerLocation::Lobby)
+			{
+				InLobby.Add(PlayerController);
+			}
+		}
+	}
+	return InLobby;
 }
 
 
-void ANBGameModeBase::SetNickNameFromOptions(APlayerController* PlayerController, const FString& Options)
+void ANBGameModeBase::InitPlayerStateUsingOptions(APlayerController* PlayerController, const FString& Options)
 {
 	ANBPlayerController* NBPlayerController = Cast<ANBPlayerController>(PlayerController);
 	if (IsValid(NBPlayerController))
@@ -61,6 +72,8 @@ void ANBGameModeBase::SetNickNameFromOptions(APlayerController* PlayerController
 			ParseOption.Split("?", &NickName, nullptr);
 			UE_LOG(LogTemp, Log, TEXT("ANBGameModeBase::SetNickNameFromOptions, NickName: %s"), *NickName);
 			NBPlayerState->SetNickName(NickName);
+
+			NBPlayerState->SetPlayerLocation(EPlayerLocation::Lobby);
 		}
 	}
 }

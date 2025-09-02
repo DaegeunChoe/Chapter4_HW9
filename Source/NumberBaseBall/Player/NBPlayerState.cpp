@@ -4,6 +4,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
+ANBPlayerState::ANBPlayerState()
+{
+	PlayerLocation = EPlayerLocation::None;
+}
+
 void ANBPlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();

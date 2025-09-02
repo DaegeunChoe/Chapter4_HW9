@@ -23,7 +23,7 @@ protected:
 	TArray<TObjectPtr<ANBPlayerController>> PlayerList;
 
 private:
-	void SetNickNameFromOptions(APlayerController* PlayerController, const FString& Options);
+	void InitPlayerStateUsingOptions(APlayerController* PlayerController, const FString& Options);
 
 	void SendNotificationToLobby(const FText& Notification);
 
