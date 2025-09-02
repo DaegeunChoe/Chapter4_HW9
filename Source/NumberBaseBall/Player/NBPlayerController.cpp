@@ -1,8 +1,10 @@
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
 #include "Core/NBGameStateBase.h"
+#include "Core/NBGameModeBase.h"
 #include "UI/UW_Lobby.h"
 #include "UI/UW_GameRoom.h"
+#include "Kismet/GameplayStatics.h"
 
 void ANBPlayerController::BeginPlay()
 {
@@ -24,6 +26,37 @@ void ANBPlayerController::UpdatePlayerList()
 		if (IsValid(LobbyWidgetInstance))
 		{
 			LobbyWidgetInstance->UpdatePlayerList(NickNames);
+		}
+	}
+}
+
+void ANBPlayerController::ServerRPCSendChatMessage_Implementation(const FText& ChatMessage)
+{
+	if (HasAuthority())
+	{
+		AGameModeBase* GameMode = UGameplayStatics::GetGameMode(this);
+		if (IsValid(GameMode))
+		{
+			ANBGameModeBase* NBGameModeBase = Cast<ANBGameModeBase>(GameMode);
+			if (IsValid(NBGameModeBase))
+			{
+				TArray<TObjectPtr<ANBPlayerController>> PlayerList = NBGameModeBase->GetPlayersInLobby();
+				for (ANBPlayerController* PlayerController : PlayerList)
+				{
+					PlayerController->ClientRPCReceiveChatMessage(ChatMessage);
+				}
+			}
+		}
+	}
+}
+
+void ANBPlayerController::ClientRPCReceiveChatMessage_Implementation(const FText& ChatMessage)
+{
+	if (!HasAuthority() && IsLocalController())
+	{
+		if (IsValid(LobbyWidgetInstance))
+		{
+			LobbyWidgetInstance->AddChatMessage(ChatMessage);
 		}
 	}
 }

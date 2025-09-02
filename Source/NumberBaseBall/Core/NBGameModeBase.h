@@ -4,7 +4,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "NBGameModeBase.generated.h"
 
-class APlayerController;
+class ANBPlayerController;
 
 UCLASS()
 class NUMBERBASEBALL_API ANBGameModeBase : public AGameModeBase
@@ -16,9 +16,11 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void Logout(AController* Exiting) override;
 
+	TArray<TObjectPtr<ANBPlayerController>> GetPlayersInLobby() const;
+
 protected:
 	UPROPERTY()
-	TArray<TObjectPtr<APlayerController>> PlayerList;
+	TArray<TObjectPtr<ANBPlayerController>> PlayerList;
 
 private:
 	void SetNickNameFromOptions(APlayerController* PlayerController, const FString& Options);

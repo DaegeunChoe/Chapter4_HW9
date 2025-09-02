@@ -17,6 +17,12 @@ public:
 
 	void UpdatePlayerList();
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPCSendChatMessage(const FText& ChatMessage);
+
+	UFUNCTION(Client, Reliable)
+	void ClientRPCReceiveChatMessage(const FText& ChatMessage);
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NBPlayerController|Widget")
 	TSubclassOf<UUW_Lobby> LobbyWidgetClass;

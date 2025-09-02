@@ -14,9 +14,13 @@ void ANBGameModeBase::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	
-	if (!PlayerList.Contains(NewPlayer))
+	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(NewPlayer);
+	if (IsValid(PlayerController))
 	{
-		PlayerList.Add(NewPlayer);
+		if (!PlayerList.Contains(PlayerController))
+		{
+			PlayerList.Add(PlayerController);
+		}
 	}
 }
 
@@ -24,7 +28,8 @@ void ANBGameModeBase::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 
-	if (APlayerController* PlayerController = Cast<APlayerController>(Exiting))
+	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(Exiting);
+	if (IsValid(PlayerController))
 	{
 		if (PlayerList.Contains(PlayerController))
 		{
@@ -32,6 +37,13 @@ void ANBGameModeBase::Logout(AController* Exiting)
 		}
 	}
 }
+
+TArray<TObjectPtr<ANBPlayerController>> ANBGameModeBase::GetPlayersInLobby() const
+{
+	// TODO 나중에 로비에 있는 플레이어만 선별해야 함
+	return PlayerList;
+}
+
 
 void ANBGameModeBase::SetNickNameFromOptions(APlayerController* PlayerController, const FString& Options)
 {

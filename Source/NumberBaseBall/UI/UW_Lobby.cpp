@@ -1,7 +1,10 @@
 #include "UI/UW_Lobby.h"
+#include "Player/NBPlayerController.h"
 #include "Components/VerticalBox.h"
 #include "Components/TextBlock.h"
 #include "Blueprint/WidgetTree.h"
+#include "Components/TextBlock.h"
+#include "Components/EditableTextBox.h"
 
 UUW_Lobby::UUW_Lobby(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -11,6 +14,29 @@ UUW_Lobby::UUW_Lobby(const FObjectInitializer& ObjectInitializer)
 void UUW_Lobby::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	if (InputEditableTextBox)
+	{
+		bool IsAlreadyBounded = InputEditableTextBox->OnTextCommitted.IsAlreadyBound(this, &ThisClass::OnCommitChatMessage);
+		if (!IsAlreadyBounded)
+		{
+			InputEditableTextBox->OnTextCommitted.AddDynamic(this, &ThisClass::OnCommitChatMessage);
+		}
+	}
+}
+
+void UUW_Lobby::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	if (InputEditableTextBox)
+	{
+		bool IsAlreadyBounded = InputEditableTextBox->OnTextCommitted.IsAlreadyBound(this, &ThisClass::OnCommitChatMessage);
+		if (IsAlreadyBounded)
+		{
+			InputEditableTextBox->OnTextCommitted.RemoveDynamic(this, &ThisClass::OnCommitChatMessage);
+		}
+	}
 }
 
 void UUW_Lobby::UpdatePlayerList(TArray<FString> NickNames)
@@ -26,3 +52,32 @@ void UUW_Lobby::UpdatePlayerList(TArray<FString> NickNames)
 		}
 	}
 }
+
+
+void UUW_Lobby::OnCommitChatMessage(const FText& Text, ETextCommit::Type CommitMethod)
+{
+	if (CommitMethod == ETextCommit::OnEnter)
+	{
+		ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
+		if (IsValid(NBPlayerController))
+		{
+			NBPlayerController->ServerRPCSendChatMessage(Text);
+		}
+		if (IsValid(InputEditableTextBox))
+		{
+			InputEditableTextBox->SetText(FText());
+		}
+	}
+}
+
+void UUW_Lobby::AddChatMessage(const FText& NewChatMessage)
+{
+	if (IsValid(ChatTextBlock))
+	{
+		FText OldText = ChatTextBlock->GetText();
+		FString FormatString = FString::Printf(TEXT("%s\n%s"), *OldText.ToString(), *NewChatMessage.ToString());
+		FText NewText = FText::FromString(FormatString);
+		ChatTextBlock->SetText(NewText);
+	}
+}
+
