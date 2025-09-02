@@ -15,11 +15,12 @@ int32 ANBGameStateBase::MakeGameRoom(ANBPlayerController* HostPlayer)
 {
 	ANBPlayerState* NBPlayerState = HostPlayer->GetPlayerState<ANBPlayerState>();
 	FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : TEXT("NONE");
-	FString FormatText = FString::Printf(TEXT("%s's Room"), *NickName);
-
+	
 	FGameRoom& NewRoom = GameRooms.AddDefaulted_GetRef();
 	NewRoom.RoomId = FGameRoom::NextRoomId++;
 	NewRoom.Host = HostPlayer;
+
+	FString FormatText = FString::Printf(TEXT("[%d] %s's Room"), NewRoom.RoomId, *NickName);
 	NewRoom.RoomName = FText::FromString(FormatText);
 
 	return NewRoom.RoomId;

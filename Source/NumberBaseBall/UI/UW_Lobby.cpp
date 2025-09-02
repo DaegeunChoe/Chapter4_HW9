@@ -99,7 +99,17 @@ void UUW_Lobby::UpdateRoomList(const TArray<FGameRoom>& GameRooms)
 			int32 Col = index % 2;
 			UUW_RoomItem* NewItem = CreateWidget<UUW_RoomItem>(GetOwningPlayer(), RoomItemWidgetClass);
 			NewItem->SetRoomId(GameRoom.RoomId);
-			RoomListPanel->AddChildToUniformGrid(NewItem, Row, Col);
+			NewItem->RoomNameTextBlock->SetText(GameRoom.RoomName);
+
+			UUniformGridSlot* NewSlot = RoomListPanel->AddChildToUniformGrid(NewItem, Row, Col);
+			NewSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
+			NewSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
+		}
+		if (GameRooms.Num() == 1)
+		{
+			UUW_RoomItem* NewItem = CreateWidget<UUW_RoomItem>(GetOwningPlayer(), RoomItemWidgetClass);
+			UUniformGridSlot* NewSlot = RoomListPanel->AddChildToUniformGrid(NewItem, 0, 1);
+			NewItem->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
 }
