@@ -7,6 +7,7 @@
 ANBPlayerState::ANBPlayerState()
 {
 	PlayerLocation = EPlayerLocation::None;
+	RoomId = -1;
 }
 
 void ANBPlayerState::PostInitializeComponents()
@@ -66,6 +67,18 @@ void ANBPlayerState::NotifyToLocalPlayerController()
 			}
 		}
 	}
+}
+
+void ANBPlayerState::SetPlayerLocationToLobby()
+{
+	PlayerLocation = EPlayerLocation::Lobby;
+	RoomId = -1;
+}
+
+void ANBPlayerState::SetPlayerLocationToGameRoom(int32 InRoomId)
+{
+	PlayerLocation = EPlayerLocation::GameRoom;
+	RoomId = InRoomId;
 }
 
 TArray<const FString> ANBPlayerState::GetPlayerNickNames()

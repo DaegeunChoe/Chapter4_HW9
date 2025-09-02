@@ -29,9 +29,11 @@ public:
 
 	const FString& GetNickName() const { return NickName; }
 	EPlayerLocation GetPlayerLocation() const { return PlayerLocation; }
+	int32 GetRoomId() const { return RoomId; }
 
 	void SetNickName(FString InNickName) { NickName = InNickName; }
-	void SetPlayerLocation(EPlayerLocation InPlayerLocation) { PlayerLocation = InPlayerLocation; }
+	void SetPlayerLocationToLobby();
+	void SetPlayerLocationToGameRoom(int32 InRoomId);
 
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_NickName)
@@ -39,6 +41,9 @@ protected:
 
 	UPROPERTY(Replicated)
 	EPlayerLocation PlayerLocation;
+
+	UPROPERTY(Replicated)
+	int32 RoomId;
 
 private:
 	UFUNCTION()

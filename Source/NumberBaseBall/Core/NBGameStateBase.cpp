@@ -2,7 +2,7 @@
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
 
-void ANBGameStateBase::MakeGameRoom(ANBPlayerController* HostPlayer)
+int32 ANBGameStateBase::MakeGameRoom(ANBPlayerController* HostPlayer)
 {
 	ANBPlayerState* NBPlayerState = HostPlayer->GetPlayerState<ANBPlayerState>();
 	FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : TEXT("NONE");
@@ -12,6 +12,8 @@ void ANBGameStateBase::MakeGameRoom(ANBPlayerController* HostPlayer)
 	NewRoom.RoomId = FGameRoom::NextRoomId++;
 	NewRoom.Host = HostPlayer;
 	NewRoom.RoomName = FText::FromString(FormatText);
+
+	return NewRoom.RoomId;
 }
 
 void ANBGameStateBase::DestroyGameRoom(int32 TargetRoomId)

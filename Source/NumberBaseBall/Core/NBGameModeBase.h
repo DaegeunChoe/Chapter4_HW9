@@ -19,6 +19,7 @@ public:
 	TArray<TObjectPtr<ANBPlayerController>> GetPlayersInLobby() const;
 
 	void MakeRoom(ANBPlayerController* HostPlayer);
+	void LeaveRoom(ANBPlayerController* Exiting);
 
 protected:
 	UPROPERTY()

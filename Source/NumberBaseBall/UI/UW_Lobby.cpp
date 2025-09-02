@@ -7,6 +7,7 @@
 #include "Components/EditableTextBox.h"
 #include "Components/Button.h"
 #include "Blueprint/WidgetTree.h"
+#include "UW_GameRoom.h"
 
 UUW_Lobby::UUW_Lobby(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -28,7 +29,11 @@ void UUW_Lobby::NativeConstruct()
 
 	if (IsValid(MakeRoomButton))
 	{
-		MakeRoomButton->OnClicked.AddDynamic(this, &ThisClass::OnMakeRoomClicked);
+		bool IsAlreadyBounded = MakeRoomButton->OnClicked.IsAlreadyBound(this, &ThisClass::OnMakeRoomClicked);
+		if (!IsAlreadyBounded)
+		{
+			MakeRoomButton->OnClicked.AddDynamic(this, &ThisClass::OnMakeRoomClicked);
+		}
 	}
 }
 
@@ -36,12 +41,21 @@ void UUW_Lobby::NativeDestruct()
 {
 	Super::NativeDestruct();
 
-	if (InputEditableTextBox)
+	if (IsValid(InputEditableTextBox))
 	{
 		bool IsAlreadyBounded = InputEditableTextBox->OnTextCommitted.IsAlreadyBound(this, &ThisClass::OnCommitChatMessage);
 		if (IsAlreadyBounded)
 		{
 			InputEditableTextBox->OnTextCommitted.RemoveDynamic(this, &ThisClass::OnCommitChatMessage);
+		}
+	}
+
+	if (IsValid(MakeRoomButton))
+	{
+		bool IsAlreadyBounded = MakeRoomButton->OnClicked.IsAlreadyBound(this, &ThisClass::OnMakeRoomClicked);
+		if (IsAlreadyBounded)
+		{
+			MakeRoomButton->OnClicked.RemoveDynamic(this, &ThisClass::OnMakeRoomClicked);
 		}
 	}
 }

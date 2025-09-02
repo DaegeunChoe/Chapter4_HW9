@@ -40,7 +40,7 @@ class NUMBERBASEBALL_API ANBGameStateBase : public AGameStateBase
 	GENERATED_BODY()
 	
 public:
-	void MakeGameRoom(ANBPlayerController* HostPlayer);
+	int32 MakeGameRoom(ANBPlayerController* HostPlayer);
 	void DestroyGameRoom(int32 TargetRoomId);
 	TArray<FGameRoom>& GetGameRoomsRef() { return GameRooms; }
 

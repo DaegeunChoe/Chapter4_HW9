@@ -65,13 +65,31 @@ void ANBGameModeBase::MakeRoom(ANBPlayerController* HostPlayer)
 		ANBPlayerState* NBPlayerState = HostPlayer->GetPlayerState<ANBPlayerState>();
 		if (IsValid(NBPlayerState))
 		{
-			NBGameStateBase->MakeGameRoom(HostPlayer);
-			NBPlayerState->SetPlayerLocation(EPlayerLocation::GameRoom);
+			int32 NewRoomId = NBGameStateBase->MakeGameRoom(HostPlayer);
+			NBPlayerState->SetPlayerLocationToGameRoom(NewRoomId);
 			HostPlayer->ClientRPCMakeRoom();
 		}
 	}
 }
 
+void ANBGameModeBase::LeaveRoom(ANBPlayerController* Exiting)
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		ANBPlayerState* NBPlayerState = Exiting->GetPlayerState<ANBPlayerState>();
+		if (IsValid(NBPlayerState))
+		{
+			int32 RoomId = NBPlayerState->GetRoomId();
+			if (RoomId != -1)
+			{
+				// TODO: 规 力芭 贸府
+			}
+			NBPlayerState->SetPlayerLocationToLobby();
+			Exiting->ClientRPCLeaveRoom();
+		}
+	}
+}
 
 void ANBGameModeBase::InitPlayerStateUsingOptions(APlayerController* PlayerController, const FString& Options)
 {
@@ -90,7 +108,7 @@ void ANBGameModeBase::InitPlayerStateUsingOptions(APlayerController* PlayerContr
 			UE_LOG(LogTemp, Log, TEXT("ANBGameModeBase::SetNickNameFromOptions, NickName: %s"), *NickName);
 			NBPlayerState->SetNickName(NickName);
 
-			NBPlayerState->SetPlayerLocation(EPlayerLocation::Lobby);
+			NBPlayerState->SetPlayerLocationToLobby();
 		}
 	}
 }

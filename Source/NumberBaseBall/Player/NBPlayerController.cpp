@@ -106,6 +106,7 @@ void ANBPlayerController::ServerRPCLeaveRoom_Implementation()
 		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
 		if (IsValid(NBGameModeBase))
 		{
+			NBGameModeBase->LeaveRoom(this);
 		}
 	}
 }
