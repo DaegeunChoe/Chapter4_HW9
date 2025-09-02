@@ -17,34 +17,18 @@ void ANBGameModeBase::PostLogin(APlayerController* NewPlayer)
 	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(NewPlayer);
 	ANBPlayerState* NBPlayerState = PlayerController->GetPlayerState<ANBPlayerState>();
 	FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
-	FString FormatText = FString::Printf(TEXT("[Notification] %s has joined the game."), *NickName);
+	FString FormatText = FString::Printf(TEXT("%s has joined the game."), *NickName);
 	FText Notification = FText::FromString(FormatText);
-	for (ANBPlayerController* Player : GetPlayersInLobby())
-	{
-		Player->ClientRPCReceiveChatMessage(Notification);
-	}
 
-	if (IsValid(PlayerController))
-	{
-		if (!PlayerList.Contains(PlayerController))
-		{
-			PlayerList.Add(PlayerController);
-		}
-	}
+	SendNotificationToLobby(Notification);
+	AddPlayerList(NewPlayer);
 }
 
 void ANBGameModeBase::Logout(AController* Exiting)
 {
 	Super::Logout(Exiting);
 
-	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(Exiting);
-	if (IsValid(PlayerController))
-	{
-		if (PlayerList.Contains(PlayerController))
-		{
-			PlayerList.Remove(PlayerController);
-		}
-	}
+	RemovePlayerList(Exiting);
 }
 
 TArray<TObjectPtr<ANBPlayerController>> ANBGameModeBase::GetPlayersInLobby() const
@@ -70,6 +54,40 @@ void ANBGameModeBase::SetNickNameFromOptions(APlayerController* PlayerController
 			ParseOption.Split("?", &NickName, nullptr);
 			UE_LOG(LogTemp, Log, TEXT("ANBGameModeBase::SetNickNameFromOptions, NickName: %s"), *NickName);
 			NBPlayerState->SetNickName(NickName);
+		}
+	}
+}
+
+void ANBGameModeBase::SendNotificationToLobby(const FText& Notification)
+{
+	FString FormatText = FString::Printf(TEXT("[Notification] %s"), *Notification.ToString());
+	FText NotificationText = FText::FromString(FormatText);
+	for (ANBPlayerController* Player : GetPlayersInLobby())
+	{
+		Player->ClientRPCReceiveChatMessage(NotificationText);
+	}
+}
+
+void ANBGameModeBase::AddPlayerList(AController* NewPlayer)
+{
+	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(NewPlayer);
+	if (IsValid(PlayerController))
+	{
+		if (!PlayerList.Contains(PlayerController))
+		{
+			PlayerList.Add(PlayerController);
+		}
+	}
+}
+
+void ANBGameModeBase::RemovePlayerList(AController* Exiting)
+{
+	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(Exiting);
+	if (IsValid(PlayerController))
+	{
+		if (PlayerList.Contains(PlayerController))
+		{
+			PlayerList.Remove(PlayerController);
 		}
 	}
 }

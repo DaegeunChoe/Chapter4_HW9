@@ -24,4 +24,9 @@ protected:
 
 private:
 	void SetNickNameFromOptions(APlayerController* PlayerController, const FString& Options);
+
+	void SendNotificationToLobby(const FText& Notification);
+
+	void AddPlayerList(AController* NewPlayer);
+	void RemovePlayerList(AController* Exiting);
 };
