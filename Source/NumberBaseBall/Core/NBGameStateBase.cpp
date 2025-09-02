@@ -1,6 +1,15 @@
 #include "Core/NBGameStateBase.h"
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
+#include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
+
+void ANBGameStateBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, GameRooms);
+}
 
 int32 ANBGameStateBase::MakeGameRoom(ANBPlayerController* HostPlayer)
 {
@@ -39,4 +48,17 @@ FGameRoom* ANBGameStateBase::GetGameRoom(int32 TargetRoomId)
 		}
 	}
 	return nullptr;
+}
+
+void ANBGameStateBase::OnRep_GameRooms()
+{
+	if (!HasAuthority())
+	{
+		APlayerController* LocalPlayerController = UGameplayStatics::GetPlayerController(this, 0);
+		ANBPlayerController* NBPlayerController = Cast<ANBPlayerController>(LocalPlayerController);
+		if (IsValid(NBPlayerController))
+		{
+			NBPlayerController->UpdateRoom(GameRooms);
+		}
+	}
 }

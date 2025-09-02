@@ -50,6 +50,17 @@ void ANBPlayerController::UpdateMyNickName(const FString& MyNickName)
 	}
 }
 
+void ANBPlayerController::UpdateRoom(const TArray<FGameRoom>& GameRooms)
+{
+	if (!HasAuthority())
+	{
+		if (IsValid(LobbyWidgetInstance))
+		{
+			LobbyWidgetInstance->UpdateRoomList(GameRooms);
+		}
+	}
+}
+
 void ANBPlayerController::ServerRPCSendChatMessage_Implementation(const FText& ChatMessage)
 {
 	if (HasAuthority())

@@ -9,6 +9,9 @@ class UScrollBox;
 class UTextBlock;
 class UEditableTextBox;
 class UButton;
+class UUniformGridPanel;
+class UUW_RoomItem;
+struct FGameRoom;
 
 UCLASS()
 class NUMBERBASEBALL_API UUW_Lobby : public UUserWidget
@@ -22,6 +25,7 @@ public:
 
 	void UpdatePlayerList(const TArray<const FString>& NickNames);
 	void UpdateMyNickName(const FString& MyNickName);
+	void UpdateRoomList(const TArray<FGameRoom>& GameRooms);
 	void AddChatMessage(const FText& NewChatMessage);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
@@ -41,6 +45,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> MakeRoomButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UUniformGridPanel> RoomListPanel;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UUW_RoomItem> RoomItemWidgetClass;
 
 private:
 	UFUNCTION()

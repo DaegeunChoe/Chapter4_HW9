@@ -7,6 +7,7 @@
 
 class UUW_Lobby;
 class UUW_GameRoom;
+struct FGameRoom;
 
 UCLASS()
 class NUMBERBASEBALL_API ANBPlayerController : public APlayerController
@@ -19,6 +20,7 @@ public:
 
 	void UpdatePlayerList(const TArray<const FString>& NickNames);
 	void UpdateMyNickName(const FString& MyNickName);
+	void UpdateRoom(const TArray<FGameRoom>& GameRooms);
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPCSendChatMessage(const FText& ChatMessage);

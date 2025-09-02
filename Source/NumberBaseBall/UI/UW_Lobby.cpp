@@ -1,4 +1,6 @@
 #include "UI/UW_Lobby.h"
+#include "UI/UW_RoomItem.h"
+#include "Core/NBGameStateBase.h"
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
 #include "Components/VerticalBox.h"
@@ -6,8 +8,10 @@
 #include "Components/ScrollBox.h"
 #include "Components/EditableTextBox.h"
 #include "Components/Button.h"
+#include "Components/UniformGridPanel.h"
+#include "Components/UniformGridSlot.h"
 #include "Blueprint/WidgetTree.h"
-#include "UW_GameRoom.h"
+
 
 UUW_Lobby::UUW_Lobby(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -79,6 +83,22 @@ void UUW_Lobby::UpdateMyNickName(const FString& MyNickName)
 	if (IsValid(MyNickNameTextBlock))
 	{
 		MyNickNameTextBlock->SetText(FText::FromString(MyNickName));
+	}
+}
+
+void UUW_Lobby::UpdateRoomList(const TArray<FGameRoom>& GameRooms)
+{
+	if (IsValid(RoomListPanel))
+	{
+		RoomListPanel->ClearChildren();
+
+		for (int32 index = 0; index < GameRooms.Num(); index++)
+		{
+			int32 Row = index / 2;
+			int32 Col = index % 2;
+			UUW_RoomItem* NewItem = CreateWidget<UUW_RoomItem>(GetOwningPlayer(), RoomItemWidgetClass);
+			RoomListPanel->AddChildToUniformGrid(NewItem, Row, Col);
+		}
 	}
 }
 
