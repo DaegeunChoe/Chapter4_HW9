@@ -28,4 +28,7 @@ public:
 
 protected:
 	int32 RoomId;
+
+	UFUNCTION()
+	void OnJoinRoomClicked();
 };

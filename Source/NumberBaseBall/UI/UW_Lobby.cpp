@@ -94,9 +94,11 @@ void UUW_Lobby::UpdateRoomList(const TArray<FGameRoom>& GameRooms)
 
 		for (int32 index = 0; index < GameRooms.Num(); index++)
 		{
+			const FGameRoom& GameRoom = GameRooms[index];
 			int32 Row = index / 2;
 			int32 Col = index % 2;
 			UUW_RoomItem* NewItem = CreateWidget<UUW_RoomItem>(GetOwningPlayer(), RoomItemWidgetClass);
+			NewItem->SetRoomId(GameRoom.RoomId);
 			RoomListPanel->AddChildToUniformGrid(NewItem, Row, Col);
 		}
 	}
