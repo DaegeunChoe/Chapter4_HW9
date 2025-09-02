@@ -28,3 +28,15 @@ void ANBGameStateBase::DestroyGameRoom(int32 TargetRoomId)
 		}
 	}
 }
+
+FGameRoom* ANBGameStateBase::GetGameRoom(int32 TargetRoomId)
+{
+	for (FGameRoom& Room : GameRooms)
+	{
+		if (Room.RoomId == TargetRoomId)
+		{
+			return &Room;
+		}
+	}
+	return nullptr;
+}

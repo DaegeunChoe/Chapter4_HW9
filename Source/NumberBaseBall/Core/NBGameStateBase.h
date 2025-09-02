@@ -43,6 +43,7 @@ public:
 	int32 MakeGameRoom(ANBPlayerController* HostPlayer);
 	void DestroyGameRoom(int32 TargetRoomId);
 	TArray<FGameRoom>& GetGameRoomsRef() { return GameRooms; }
+	FGameRoom* GetGameRoom(int32 TargetRoomId);
 
 private:
 	UPROPERTY()

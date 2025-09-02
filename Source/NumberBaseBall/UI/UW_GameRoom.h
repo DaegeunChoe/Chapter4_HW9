@@ -20,6 +20,8 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
+	void AddChatMessage(const FText& NewChatMessage);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UScrollBox> ChatScrollBox;
 

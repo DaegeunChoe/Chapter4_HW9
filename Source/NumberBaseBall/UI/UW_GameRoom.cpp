@@ -87,3 +87,18 @@ void UUW_GameRoom::OnExitRoomButtonClicked()
 	}
 }
 
+void UUW_GameRoom::AddChatMessage(const FText& NewChatMessage)
+{
+	if (IsValid(ChatTextBlock))
+	{
+		FText OldText = ChatTextBlock->GetText();
+		FString FormatString = FString::Printf(TEXT("%s\n%s"), *OldText.ToString(), *NewChatMessage.ToString());
+		FText NewText = FText::FromString(FormatString);
+		ChatTextBlock->SetText(NewText);
+	}
+
+	if (IsValid(ChatScrollBox))
+	{
+		ChatScrollBox->ScrollToEnd();
+	}
+}

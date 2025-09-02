@@ -63,12 +63,17 @@ private:
 	void SwapViewportAndSetInputMode(UUserWidget* TargetWidget);
 	TArray<FString> GetPlayerNickNames();
 
+	void BroadcastToLobby(const FText& ChatMessage);
+	void BroadcstToGameRoom(const FText& ChatMessage);
+
 	template <typename T>
 	T* CheckAndCreateWidget(TSubclassOf<UUserWidget> WidgetClass);
 
 	template <typename T>
 	T* GetGameMode();
 
+	template <typename T>
+	T* GetGameState();
 
 	FTimerHandle LatePlayerStateUpdateHandle;
 };
@@ -90,6 +95,17 @@ inline T* ANBPlayerController::GetGameMode()
 	if (GameMode)
 	{
 		return Cast<T>(GameMode);
+	}
+	return nullptr;
+}
+
+template<typename T>
+inline T* ANBPlayerController::GetGameState()
+{
+	AGameStateBase* GameState = UGameplayStatics::GetGameState(this);
+	if (GameState)
+	{
+		return Cast<T>(GameState);
 	}
 	return nullptr;
 }

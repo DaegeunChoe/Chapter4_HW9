@@ -1,6 +1,7 @@
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
 #include "Core/NBGameModeBase.h"
+#include "Core/NBGameStateBase.h"
 #include "UI/UW_Lobby.h"
 #include "UI/UW_GameRoom.h"
 #include "UObject/WeakObjectPtrTemplates.h"
@@ -53,13 +54,16 @@ void ANBPlayerController::ServerRPCSendChatMessage_Implementation(const FText& C
 {
 	if (HasAuthority())
 	{
-		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
-		if (IsValid(NBGameModeBase))
+		ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
+		if (IsValid(NBPlayerState))
 		{
-			TArray<TObjectPtr<ANBPlayerController>> PlayerList = NBGameModeBase->GetPlayersInLobby();
-			for (ANBPlayerController* PlayerController : PlayerList)
+			if (NBPlayerState->GetPlayerLocation() == EPlayerLocation::Lobby)
 			{
-				PlayerController->ClientRPCReceiveChatMessage(ChatMessage);
+				BroadcastToLobby(ChatMessage);
+			}
+			else if (NBPlayerState->GetPlayerLocation() == EPlayerLocation::GameRoom)
+			{
+				BroadcstToGameRoom(ChatMessage);
 			}
 		}
 	}
@@ -71,7 +75,17 @@ void ANBPlayerController::ClientRPCReceiveChatMessage_Implementation(const FText
 	{
 		if (IsValid(LobbyWidgetInstance))
 		{
-			LobbyWidgetInstance->AddChatMessage(ChatMessage);
+			if (LobbyWidgetInstance->IsInViewport())
+			{
+				LobbyWidgetInstance->AddChatMessage(ChatMessage);
+			}
+		}
+		if (GameRoomWidgetInstance->IsInViewport())
+		{
+			if (GameRoomWidgetInstance->IsInViewport())
+			{
+				GameRoomWidgetInstance->AddChatMessage(ChatMessage);
+			}
 		}
 	}
 }
@@ -176,5 +190,50 @@ void ANBPlayerController::SwapViewportAndSetInputMode(UUserWidget* TargetWidget)
 		InputMode.SetWidgetToFocus(TargetWidget->GetCachedWidget());
 		SetInputMode(InputMode);
 		bShowMouseCursor = true;
+	}
+}
+
+void ANBPlayerController::BroadcastToLobby(const FText& ChatMessage)
+{
+	if (HasAuthority())
+	{
+		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
+		if (IsValid(NBGameModeBase))
+		{
+			TArray<TObjectPtr<ANBPlayerController>> PlayerList = NBGameModeBase->GetPlayersInLobby();
+			for (ANBPlayerController* PlayerController : PlayerList)
+			{
+				PlayerController->ClientRPCReceiveChatMessage(ChatMessage);
+			}
+		}
+	}
+}
+
+void ANBPlayerController::BroadcstToGameRoom(const FText& ChatMessage)
+{
+	if (HasAuthority())
+	{
+		ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+		if (IsValid(NBGameStateBase))
+		{
+			ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
+			if (IsValid(NBPlayerState))
+			{
+				int32 RoomId = NBPlayerState->GetRoomId();
+				FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+
+				ANBPlayerController* Host = GameRoom->Host;
+				ANBPlayerController* Guest = GameRoom->Guest;
+
+				if (IsValid(Host))
+				{
+					Host->ClientRPCReceiveChatMessage(ChatMessage);
+				}
+				if (IsValid(Guest))
+				{
+					Guest->ClientRPCReceiveChatMessage(ChatMessage);
+				}
+			}
+		}
 	}
 }
