@@ -38,6 +38,8 @@ protected:
 	TObjectPtr<UUW_GameRoom> GameRoomWidgetInstance;
 
 private:
+	virtual void OnRep_PlayerState() override;
+
 	void SwapViewportAndSetInputMode(UUserWidget* TargetWidget);
 	TArray<FString> GetPlayerNickNames();
 

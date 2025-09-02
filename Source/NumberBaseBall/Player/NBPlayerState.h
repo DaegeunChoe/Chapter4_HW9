@@ -13,7 +13,10 @@ class NUMBERBASEBALL_API ANBPlayerState : public APlayerState
 public:
 	virtual void PostInitializeComponents() override;
 	virtual void BeginDestroy() override;
+	virtual void Destroyed() override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	void NotifyToLocalPlayerController();
 
 	const FString& GetNickName() const { return NickName; }
 	void SetNickName(FString InNickName) { NickName = InNickName; }
@@ -28,6 +31,5 @@ private:
 
 	virtual void OnRep_Owner() override;
 
-	void NotifyToLocalPlayerController();
 	TArray<const FString> GetPlayerNickNames();
 };

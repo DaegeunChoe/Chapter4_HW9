@@ -70,6 +70,17 @@ void ANBPlayerController::ClientRPCReceiveChatMessage_Implementation(const FText
 	}
 }
 
+void ANBPlayerController::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
+	if (IsValid(NBPlayerState))
+	{
+		NBPlayerState->NotifyToLocalPlayerController();
+	}
+}
+
 void ANBPlayerController::SwapViewportAndSetInputMode(UUserWidget* TargetWidget)
 {
 	if (LobbyWidgetInstance->IsInViewport())

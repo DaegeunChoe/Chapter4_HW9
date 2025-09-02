@@ -16,6 +16,13 @@ void ANBPlayerState::BeginDestroy()
 	NotifyToLocalPlayerController();
 }
 
+void ANBPlayerState::Destroyed()
+{
+	Super::Destroyed();
+
+	NotifyToLocalPlayerController();
+}
+
 void ANBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
