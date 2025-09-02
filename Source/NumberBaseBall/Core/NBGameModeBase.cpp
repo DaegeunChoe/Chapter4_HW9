@@ -80,10 +80,28 @@ void ANBGameModeBase::LeaveRoom(ANBPlayerController* Exiting)
 		ANBPlayerState* NBPlayerState = Exiting->GetPlayerState<ANBPlayerState>();
 		if (IsValid(NBPlayerState))
 		{
+			// TODO: 리팩토링할 시간이 있다면..
 			int32 RoomId = NBPlayerState->GetRoomId();
 			if (RoomId != -1)
 			{
-				// TODO: 방 제거 처리
+				FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+				if (GameRoom)
+				{
+					if (GameRoom->Host == Exiting)
+					{
+						NBGameStateBase->DestroyGameRoom(RoomId);
+						if (IsValid(GameRoom->Guest))
+						{
+							ANBPlayerState* GuestPlayerState = GameRoom->Guest->GetPlayerState<ANBPlayerState>();
+							GuestPlayerState->SetPlayerLocationToLobby();
+							GameRoom->Guest->ClientRPCLeaveRoom();
+						}
+					}
+					else if (GameRoom->Guest == Exiting)
+					{
+						GameRoom->Guest = nullptr;
+					}
+				}
 			}
 			NBPlayerState->SetPlayerLocationToLobby();
 			Exiting->ClientRPCLeaveRoom();

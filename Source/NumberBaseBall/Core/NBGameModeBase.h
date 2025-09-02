@@ -27,7 +27,6 @@ protected:
 
 private:
 	void InitPlayerStateUsingOptions(APlayerController* PlayerController, const FString& Options);
-
 	void SendNotificationToLobby(const FText& Notification);
 
 	void AddPlayerList(AController* NewPlayer);
