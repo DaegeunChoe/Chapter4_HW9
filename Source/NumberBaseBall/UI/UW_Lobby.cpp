@@ -94,6 +94,7 @@ void UUW_Lobby::OnMakeRoomClicked()
 	ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
 	if (IsValid(NBPlayerController))
 	{
+		NBPlayerController->ServerRPCMakeRoom();
 	}
 }
 

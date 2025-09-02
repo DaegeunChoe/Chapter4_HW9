@@ -18,6 +18,8 @@ public:
 
 	TArray<TObjectPtr<ANBPlayerController>> GetPlayersInLobby() const;
 
+	void MakeRoom(ANBPlayerController* HostPlayer);
+
 protected:
 	UPROPERTY()
 	TArray<TObjectPtr<ANBPlayerController>> PlayerList;

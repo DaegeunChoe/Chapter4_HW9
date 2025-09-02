@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
 #include "NBPlayerController.generated.h"
 
 class UUW_Lobby;
@@ -34,6 +35,15 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPCLeaveRoom();
 
+	UFUNCTION(Client, Reliable)
+	void ClientRPCMakeRoom();
+
+	UFUNCTION(Client, Reliable)
+	void ClientRPCJoinRoom(int32 RoomId);
+
+	UFUNCTION(Client, Reliable)
+	void ClientRPCLeaveRoom();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NBPlayerController|Widget")
 	TSubclassOf<UUW_Lobby> LobbyWidgetClass;
@@ -56,6 +66,9 @@ private:
 	template <typename T>
 	T* CheckAndCreateWidget(TSubclassOf<UUserWidget> WidgetClass);
 
+	template <typename T>
+	T* GetGameMode();
+
 
 	FTimerHandle LatePlayerStateUpdateHandle;
 };
@@ -66,6 +79,17 @@ inline T* ANBPlayerController::CheckAndCreateWidget(TSubclassOf<UUserWidget> Wid
 	if (IsValid(WidgetClass))
 	{
 		return CreateWidget<T>(this, WidgetClass);
+	}
+	return nullptr;
+}
+
+template<typename T>
+inline T* ANBPlayerController::GetGameMode()
+{
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(this);
+	if (GameMode)
+	{
+		return Cast<T>(GameMode);
 	}
 	return nullptr;
 }

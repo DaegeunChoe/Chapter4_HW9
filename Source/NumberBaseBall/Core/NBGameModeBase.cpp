@@ -3,6 +3,8 @@
 #include "Player/NBPlayerController.h"
 #include "Player/NBPlayerState.h"
 
+int32 FGameRoom::NextRoomId = 0;
+
 APlayerController* ANBGameModeBase::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
 {
 	APlayerController* NewPlayerController = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
@@ -53,6 +55,21 @@ TArray<TObjectPtr<ANBPlayerController>> ANBGameModeBase::GetPlayersInLobby() con
 		}
 	}
 	return InLobby;
+}
+
+void ANBGameModeBase::MakeRoom(ANBPlayerController* HostPlayer)
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		ANBPlayerState* NBPlayerState = HostPlayer->GetPlayerState<ANBPlayerState>();
+		if (IsValid(NBPlayerState))
+		{
+			NBGameStateBase->MakeGameRoom(HostPlayer);
+			NBPlayerState->SetPlayerLocation(EPlayerLocation::GameRoom);
+			HostPlayer->ClientRPCMakeRoom();
+		}
+	}
 }
 
 

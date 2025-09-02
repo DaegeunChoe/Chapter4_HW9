@@ -3,7 +3,6 @@
 #include "Core/NBGameModeBase.h"
 #include "UI/UW_Lobby.h"
 #include "UI/UW_GameRoom.h"
-#include "Kismet/GameplayStatics.h"
 #include "UObject/WeakObjectPtrTemplates.h"
 
 void ANBPlayerController::BeginPlay()
@@ -54,17 +53,13 @@ void ANBPlayerController::ServerRPCSendChatMessage_Implementation(const FText& C
 {
 	if (HasAuthority())
 	{
-		AGameModeBase* GameMode = UGameplayStatics::GetGameMode(this);
-		if (IsValid(GameMode))
+		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
+		if (IsValid(NBGameModeBase))
 		{
-			ANBGameModeBase* NBGameModeBase = Cast<ANBGameModeBase>(GameMode);
-			if (IsValid(NBGameModeBase))
+			TArray<TObjectPtr<ANBPlayerController>> PlayerList = NBGameModeBase->GetPlayersInLobby();
+			for (ANBPlayerController* PlayerController : PlayerList)
 			{
-				TArray<TObjectPtr<ANBPlayerController>> PlayerList = NBGameModeBase->GetPlayersInLobby();
-				for (ANBPlayerController* PlayerController : PlayerList)
-				{
-					PlayerController->ClientRPCReceiveChatMessage(ChatMessage);
-				}
+				PlayerController->ClientRPCReceiveChatMessage(ChatMessage);
 			}
 		}
 	}
@@ -83,14 +78,60 @@ void ANBPlayerController::ClientRPCReceiveChatMessage_Implementation(const FText
 
 void ANBPlayerController::ServerRPCMakeRoom_Implementation()
 {
+	if (HasAuthority())
+	{
+		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
+		if (IsValid(NBGameModeBase))
+		{
+			NBGameModeBase->MakeRoom(this);
+		}
+	}
 }
 
 void ANBPlayerController::ServerRPCJoinRoom_Implementation(int32 RoomId)
 {
+	if (HasAuthority())
+	{
+		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
+		if (IsValid(NBGameModeBase))
+		{
+		}
+	}
 }
 
 void ANBPlayerController::ServerRPCLeaveRoom_Implementation()
 {
+	if (HasAuthority())
+	{
+		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
+		if (IsValid(NBGameModeBase))
+		{
+		}
+	}
+}
+
+void ANBPlayerController::ClientRPCMakeRoom_Implementation()
+{
+	if (!HasAuthority() && IsLocalController())
+	{
+		SwapViewportAndSetInputMode(GameRoomWidgetInstance);
+	}
+}
+
+void ANBPlayerController::ClientRPCJoinRoom_Implementation(int32 RoomId)
+{
+	if (!HasAuthority() && IsLocalController())
+	{
+		SwapViewportAndSetInputMode(GameRoomWidgetInstance);
+	}
+}
+
+void ANBPlayerController::ClientRPCLeaveRoom_Implementation()
+{
+	if (!HasAuthority() && IsLocalController())
+	{
+		SwapViewportAndSetInputMode(LobbyWidgetInstance);
+	}
 }
 
 void ANBPlayerController::OnRep_PlayerState()
