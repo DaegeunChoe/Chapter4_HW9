@@ -1,37 +1,41 @@
 #include "Player/NBPlayerState.h"
 #include "Player/NBPlayerController.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 void ANBPlayerState::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	if (!HasAuthority())
-	{
-		ANBPlayerController* PlayerController = GetOwner<ANBPlayerController>();
-		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue, FString::Printf(TEXT("ANBPlayerState::PostInitializeComponents()")));
-		if (IsValid(PlayerController))
-		{
-			// TODO: 이게 호출이 안됨
-			// Owner Replication을 기다려야 할 듯
-			PlayerController->UpdatePlayerList();
-			GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue, FString::Printf(TEXT("PlayerController->UpdatePlayerList()")));
-		}
-	}
 }
 
 void ANBPlayerState::BeginDestroy()
 {
 	Super::BeginDestroy();
 
+	NotifyToLocalPlayerController();
+}
+
+void ANBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, NickName);
+}
+
+void ANBPlayerState::NotifyToLocalPlayerController()
+{
 	if (!HasAuthority())
 	{
-		ANBPlayerController* PlayerController = GetOwner<ANBPlayerController>();
-		GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue, FString::Printf(TEXT(" ANBPlayerState::BeginDestroy()")));
-		if (IsValid(PlayerController))
+		APlayerController* LocalPlayerController = UGameplayStatics::GetPlayerController(this, 0);
+		ANBPlayerController* NBPlayerController = Cast<ANBPlayerController>(LocalPlayerController);
+		if (IsValid(NBPlayerController))
 		{
-			PlayerController->UpdatePlayerList();
-			GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue, FString::Printf(TEXT("PlayerController->UpdatePlayerList()")));
+			NBPlayerController->UpdatePlayerList();
 		}
 	}
+}
+
+void ANBPlayerState::OnRep_NickName()
+{
+	NotifyToLocalPlayerController();
 }

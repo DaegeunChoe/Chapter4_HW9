@@ -18,7 +18,6 @@ void ANBPlayerController::BeginPlay()
 
 void ANBPlayerController::UpdatePlayerList()
 {
-	// TODO: GameStateBase->PlayerArray를 사용할 수 있는 시점이 언제인지 파악해야 할 듯
 	if (HasAuthority())
 	{
 		return;
@@ -35,7 +34,7 @@ void ANBPlayerController::UpdatePlayerList()
 				ANBPlayerState* NBPlayerState = Cast<ANBPlayerState>(OtherPlayerState);
 				if (IsValid(NBPlayerState))
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Red,
+					GEngine->AddOnScreenDebugMessage(-1, 30, FColor::Blue,
 						FString::Printf(TEXT("Users: %s"), *NBPlayerState->GetNickName()));
 				}
 			}
