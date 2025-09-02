@@ -5,6 +5,7 @@
 #include "UW_Lobby.generated.h"
 
 class UVerticalBox;
+class UScrollBox;
 class UTextBlock;
 class UEditableTextBox;
 
@@ -23,6 +24,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UVerticalBox> UserListBox;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UScrollBox> ChatScrollBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> ChatTextBlock;

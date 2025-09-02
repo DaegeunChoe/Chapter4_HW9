@@ -1,10 +1,11 @@
 #include "UI/UW_Lobby.h"
 #include "Player/NBPlayerController.h"
+#include "Player/NBPlayerState.h"
 #include "Components/VerticalBox.h"
 #include "Components/TextBlock.h"
-#include "Blueprint/WidgetTree.h"
-#include "Components/TextBlock.h"
+#include "Components/ScrollBox.h"
 #include "Components/EditableTextBox.h"
+#include "Blueprint/WidgetTree.h"
 
 UUW_Lobby::UUW_Lobby(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -61,7 +62,11 @@ void UUW_Lobby::OnCommitChatMessage(const FText& Text, ETextCommit::Type CommitM
 		ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
 		if (IsValid(NBPlayerController))
 		{
-			NBPlayerController->ServerRPCSendChatMessage(Text);
+			ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
+			FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
+			FString FormatString = FString::Printf(TEXT("%s: %s"), *NickName, *Text.ToString());
+			FText ChatMessage = FText::FromString(FormatString);
+			NBPlayerController->ServerRPCSendChatMessage(ChatMessage);
 		}
 		if (IsValid(InputEditableTextBox))
 		{
@@ -78,6 +83,11 @@ void UUW_Lobby::AddChatMessage(const FText& NewChatMessage)
 		FString FormatString = FString::Printf(TEXT("%s\n%s"), *OldText.ToString(), *NewChatMessage.ToString());
 		FText NewText = FText::FromString(FormatString);
 		ChatTextBlock->SetText(NewText);
+	}
+
+	if (IsValid(ChatScrollBox))
+	{
+		ChatScrollBox->ScrollToEnd();
 	}
 }
 
