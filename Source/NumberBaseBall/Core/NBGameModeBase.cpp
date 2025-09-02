@@ -15,6 +15,15 @@ void ANBGameModeBase::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	
 	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(NewPlayer);
+	ANBPlayerState* NBPlayerState = PlayerController->GetPlayerState<ANBPlayerState>();
+	FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
+	FString FormatText = FString::Printf(TEXT("[Notification] %s has joined the game."), *NickName);
+	FText Notification = FText::FromString(FormatText);
+	for (ANBPlayerController* Player : GetPlayersInLobby())
+	{
+		Player->ClientRPCReceiveChatMessage(Notification);
+	}
+
 	if (IsValid(PlayerController))
 	{
 		if (!PlayerList.Contains(PlayerController))
