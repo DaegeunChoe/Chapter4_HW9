@@ -84,10 +84,10 @@ private:
 	T* CheckAndCreateWidget(TSubclassOf<UUserWidget> WidgetClass);
 
 	template <typename T>
-	T* GetGameMode();
+	T* GetVaildGameMode();
 
 	template <typename T>
-	T* GetGameState();
+	T* GetVaildGameState();
 
 
 	static FString UnknownNickName;
@@ -104,23 +104,31 @@ inline T* ANBPlayerController::CheckAndCreateWidget(TSubclassOf<UUserWidget> Wid
 }
 
 template<typename T>
-inline T* ANBPlayerController::GetGameMode()
+inline T* ANBPlayerController::GetVaildGameMode()
 {
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(this);
 	if (GameMode)
 	{
-		return Cast<T>(GameMode);
+		T* Result = Cast<T>(GameMode);
+		if (IsValid(Result))
+		{
+			return Result;
+		}
 	}
 	return nullptr;
 }
 
 template<typename T>
-inline T* ANBPlayerController::GetGameState()
+inline T* ANBPlayerController::GetVaildGameState()
 {
 	AGameStateBase* GameState = UGameplayStatics::GetGameState(this);
 	if (GameState)
 	{
-		return Cast<T>(GameState);
+		T* Result = Cast<T>(GameState);
+		if (IsValid(Result))
+		{
+			return Result;
+		}
 	}
 	return nullptr;
 }
