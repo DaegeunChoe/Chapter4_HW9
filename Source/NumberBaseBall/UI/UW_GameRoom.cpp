@@ -102,9 +102,9 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 		FString HostNickName;
 		if (GameRoomInfo)
 		{
-			if (IsValid(GameRoomInfo->HostState))
+			if (IsValid(GameRoomInfo->GetHostState()))
 			{
-				HostNickName = GameRoomInfo->HostState->GetNickName();
+				HostNickName = GameRoomInfo->GetHostState()->GetNickName();
 				PlayerCountInRoom++;
 			}
 		}
@@ -119,9 +119,9 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 		FString GuestNickName;
 		if (GameRoomInfo)
 		{
-			if (IsValid(GameRoomInfo->GuestState))
+			if (IsValid(GameRoomInfo->GetGuestState()))
 			{
-				GuestNickName = GameRoomInfo->GuestState->GetNickName();
+				GuestNickName = GameRoomInfo->GetGuestState()->GetNickName();
 				PlayerCountInRoom++;
 			}
 		}
@@ -133,9 +133,9 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 
 	if (IsValid(GameStartButton))
 	{
-		if (PlayerCountInRoom >= 2 && !GameRoomInfo->IsPlaying)
+		if (PlayerCountInRoom >= 2 && !GameRoomInfo->IsPlayingRoom())
 		{
-			if (GameRoomInfo->Host == GetOwningPlayer())
+			if (GameRoomInfo->IsHost(GetOwningPlayer<ANBPlayerController>()))
 			{
 				GameStartButton->SetVisibility(ESlateVisibility::Visible);
 			}
@@ -148,7 +148,7 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 
 	if (IsValid(ExitRoomButton))
 	{
-		if (GameRoomInfo->IsPlaying)
+		if (GameRoomInfo->IsPlayingRoom())
 		{
 			ExitRoomButton->SetVisibility(ESlateVisibility::Hidden);
 		}
@@ -165,7 +165,7 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 		{
 			if (GameRoomInfo)
 			{
-				if (GameRoomInfo->IsPlaying)
+				if (GameRoomInfo->IsPlayingRoom())
 				{
 					CachedRemainTime = NBPlayerState->GetPlayerGameState()->RemainTime;
 					CachedRemainTime = FMath::Clamp(CachedRemainTime, 0.0f, CachedRemainTime);

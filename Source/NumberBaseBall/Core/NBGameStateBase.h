@@ -7,6 +7,7 @@
 class ANBPlayerController;
 struct FGameRoom;
 
+
 UCLASS()
 class NUMBERBASEBALL_API ANBGameStateBase : public AGameStateBase
 {
@@ -15,9 +16,9 @@ class NUMBERBASEBALL_API ANBGameStateBase : public AGameStateBase
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-	int32 MakeGameRoom(ANBPlayerController* HostPlayer);
-	bool JoinGameRoom(ANBPlayerController* GuestPlayer, int32 TargetRoomId);
+	FGameRoom* MakeGameRoom(ANBPlayerController* HostPlayer);
 	void DestroyGameRoom(int32 TargetRoomId);
+
 	TArray<FGameRoom>& GetGameRoomsRef() { return GameRooms; }
 	FGameRoom* GetGameRoom(int32 TargetRoomId);
 

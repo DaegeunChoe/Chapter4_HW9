@@ -84,6 +84,15 @@ const FString& ANBPlayerController::GetNickName()
 	return UnknownNickName;
 }
 
+int32 ANBPlayerController::GetRoomId()
+{
+	if (ANBPlayerState* NBPlayerState = GetValidPlayerState<ANBPlayerState>())
+	{
+		return NBPlayerState->GetRoomId();
+	}
+	return -1;
+}
+
 void ANBPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();

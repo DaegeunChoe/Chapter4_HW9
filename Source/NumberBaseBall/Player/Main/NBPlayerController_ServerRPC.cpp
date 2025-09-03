@@ -103,16 +103,13 @@ void ANBPlayerController::BroadcstToGameRoom(const FText& ChatMessage)
 				int32 RoomId = NBPlayerState->GetRoomId();
 				FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
 
-				ANBPlayerController* Host = GameRoom->Host;
-				ANBPlayerController* Guest = GameRoom->Guest;
-
-				if (IsValid(Host))
+				TArray<ANBPlayerController*> PlayersInRoom = GameRoom->GetPlayersInRoom();
+				for (ANBPlayerController* PlayerInRoom : PlayersInRoom)
 				{
-					Host->ClientRPCReceiveChatMessage(ChatMessage);
-				}
-				if (IsValid(Guest))
-				{
-					Guest->ClientRPCReceiveChatMessage(ChatMessage);
+					if (IsValid(PlayerInRoom))
+					{
+						PlayerInRoom->ClientRPCReceiveChatMessage(ChatMessage);
+					}
 				}
 			}
 		}

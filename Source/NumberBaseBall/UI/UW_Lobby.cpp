@@ -111,12 +111,10 @@ void UUW_Lobby::UpdateRoomList(const TArray<FGameRoom>& GameRooms)
 			int32 Row = index / 2;
 			int32 Col = index % 2;
 			UUW_RoomItem* NewItem = CreateWidget<UUW_RoomItem>(GetOwningPlayer(), RoomItemWidgetClass);
-			NewItem->SetRoomId(GameRoom.RoomId);
-			NewItem->RoomNameTextBlock->SetText(GameRoom.RoomName);
+			NewItem->SetRoomId(GameRoom.GetRoomId());
+			NewItem->RoomNameTextBlock->SetText(GameRoom.GetRoomName());
 
-			bool IsFullGameRoom = (GameRoom.HostState != nullptr) && (GameRoom.GuestState != nullptr);
-			bool IsPlayingGameRoom = GameRoom.IsPlaying;
-			bool CanJoin = !IsFullGameRoom && !IsPlayingGameRoom;
+			bool CanJoin = GameRoom.CanJoin();
 			if (CanJoin)
 			{
 				NewItem->EnableJoinButton();

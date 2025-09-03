@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/Main/NBPlayerState.h"
 #include "NBPlayerController.generated.h"
 
 class UUW_Lobby;
@@ -24,6 +25,7 @@ public:
 	void UpdateGameRoomInfo(const FGameRoom* GameRoom);
 
 	const FString& GetNickName();
+	int32 GetRoomId();
 
 	UFUNCTION(Server, Reliable)
 	void ServerRPCSendChatMessage(const FText& ChatMessage);
@@ -138,10 +140,13 @@ inline T* ANBPlayerController::GetValidGameState()
 template<typename T>
 inline T* ANBPlayerController::GetValidPlayerState()
 {
-	T* Result = GetPlayerState<T>();
-	if (IsValid(Result))
+	if (PlayerState)
 	{
-		return Result;
+		T* Result = Cast<T>(PlayerState);
+		if (IsValid(Result))
+		{
+			return Result;
+		}
 	}
 	return nullptr;
 }
