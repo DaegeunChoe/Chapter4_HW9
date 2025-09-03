@@ -13,8 +13,7 @@ void ANBGameStateBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 
 int32 ANBGameStateBase::MakeGameRoom(ANBPlayerController* HostPlayer)
 {
-	ANBPlayerState* NBPlayerState = HostPlayer->GetPlayerState<ANBPlayerState>();
-	FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : TEXT("NONE");
+	FString NickName = HostPlayer->GetNickName();
 	
 	FGameRoom& NewRoom = GameRooms.AddDefaulted_GetRef();
 	NewRoom.RoomId = FGameRoom::NextRoomId++;

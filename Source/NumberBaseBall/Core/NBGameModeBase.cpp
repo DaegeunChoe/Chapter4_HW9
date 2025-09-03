@@ -17,13 +17,15 @@ void ANBGameModeBase::PostLogin(APlayerController* NewPlayer)
 	Super::PostLogin(NewPlayer);
 	
 	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(NewPlayer);
-	ANBPlayerState* NBPlayerState = PlayerController->GetPlayerState<ANBPlayerState>();
-	FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
-	FString FormatText = FString::Printf(TEXT("%s has joined the game."), *NickName);
-	FText Notification = FText::FromString(FormatText);
+	if (IsValid(PlayerController))
+	{
+		const FString& NickName = PlayerController->GetNickName();
+		FString FormatText = FString::Printf(TEXT("%s has joined the game."), *NickName);
+		FText Notification = FText::FromString(FormatText);
 
-	SendNotificationToLobby(Notification);
-	AddPlayerList(NewPlayer);
+		SendNotificationToLobby(Notification);
+		AddPlayerList(NewPlayer);
+	}
 }
 
 void ANBGameModeBase::Logout(AController* Exiting)
@@ -31,13 +33,15 @@ void ANBGameModeBase::Logout(AController* Exiting)
 	Super::Logout(Exiting);
 
 	ANBPlayerController* PlayerController = Cast<ANBPlayerController>(Exiting);
-	ANBPlayerState* NBPlayerState = PlayerController->GetPlayerState<ANBPlayerState>();
-	FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
-	FString FormatText = FString::Printf(TEXT("%s has left."), *NickName);
-	FText Notification = FText::FromString(FormatText);
+	if (IsValid(PlayerController))
+	{
+		const FString& NickName = PlayerController->GetNickName();
+		FString FormatText = FString::Printf(TEXT("%s has left."), *NickName);
+		FText Notification = FText::FromString(FormatText);
 
-	SendNotificationToLobby(Notification);
-	RemovePlayerList(Exiting);
+		SendNotificationToLobby(Notification);
+		RemovePlayerList(Exiting);
+	}
 }
 
 TArray<TObjectPtr<ANBPlayerController>> ANBGameModeBase::GetPlayersInLobby() const
@@ -149,7 +153,7 @@ void ANBGameModeBase::GuessNumber(ANBPlayerController* Player, const FText& Gues
 			{
 				if (PlayerState->GetPlayerGameState()->HasTurn)
 				{
-					const FString& NickName = PlayerState->GetNickName();
+					const FString& NickName = Player->GetNickName();
 					const FString& GuessNumberString = GuessNumberText.ToString();
 
 					FString Answer = GameRoomAnwsers[GameRoom->RoomId];
@@ -266,9 +270,8 @@ void ANBGameModeBase::EndGame(ANBPlayerController* Winner, int32 RoomId)
 		if (GameRoom)
 		{
 			ClearGameRoomTimer(GameRoom->RoomId);
-		
-			ANBPlayerState* HostPlayerState = Winner->GetPlayerState<ANBPlayerState>();
-			FString WinnerNickName = IsValid(HostPlayerState) ? HostPlayerState->GetNickName() : TEXT("NONE");
+
+			FString WinnerNickName = Winner->GetNickName();
 
 			FString StartString = FString::Printf(TEXT("Game End! Winner: %s"), *WinnerNickName);
 			FText StartText = FText::FromString(StartString);
