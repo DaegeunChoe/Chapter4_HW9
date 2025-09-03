@@ -149,10 +149,10 @@ void ANBGameModeBase::StartGame(ANBPlayerController* HostPlayer)
 		if (IsValid(HostPlayerState))
 		{
 			int32 RoomId = HostPlayerState->GetRoomId();
-			if (RoomId != -1)
-			{
-				FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+			FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
 
+			if (GameRoom)
+			{
 				if (GameRoom->Host != HostPlayer)
 				{
 					return;
@@ -203,14 +203,29 @@ void ANBGameModeBase::StartGame(ANBPlayerController* HostPlayer)
 						SendNotificationToPlayer(GameRoom->Guest, YourTurn);
 					}
 				}
-
-				if (GameRoom)
-				{
-					GameRoom->IsPlaying = true;
-				}
-
+				GameRoom->IsPlaying = true;
 				GameSynchronization(GameRoom->RoomId);
 			}
+		}
+	}
+}
+
+void ANBGameModeBase::EndGame(int32 RoomId)
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+		if (GameRoom)
+		{
+			ClearGameRoomTimer(GameRoom->RoomId);
+			FString StartString(TEXT("Game End..."));
+			FText StartText = FText::FromString(StartString);
+			SendNotificationToPlayer(GameRoom->Host, StartText);
+			SendNotificationToPlayer(GameRoom->Guest, StartText);
+
+			GameRoom->IsPlaying = false;
+			GameSynchronization(GameRoom->RoomId);
 		}
 	}
 }
@@ -286,6 +301,18 @@ void ANBGameModeBase::SetGameRoomTimer(int32 RoomId)
 	GameRoomTimers.Add(RoomId, MoveTemp(GameRoomTimerHandle));
 }
 
+void ANBGameModeBase::ClearGameRoomTimer(int32 RoomId)
+{
+	if (GameRoomTimers.Contains(RoomId))
+	{
+		if (GameRoomTimers[RoomId].IsValid())
+		{
+			GetWorldTimerManager().ClearTimer(GameRoomTimers[RoomId]);
+			GameRoomTimers[RoomId].Invalidate();
+		}
+	}
+}
+
 void ANBGameModeBase::OnGameTimerElapsed(int32 RoomId)
 {
 	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
@@ -324,14 +351,24 @@ void ANBGameModeBase::OnGameTimerElapsed(int32 RoomId)
 						HasTurnPlayerState->GetPlayerGameState()->ReleaseTurn();
 						NextPlayerState->GetPlayerGameState()->GetTurn(TurnDuration);
 
-						int32 RemainChance = GameRoom->HostState->GetPlayerGameState()->RemainChance;
-						FString YourTurnString = FString::Printf(TEXT("Your Turn!: Remain Chance: %d"), RemainChance);
-						FText YourTurn = FText::FromString(YourTurnString);
-						FString OtherTurnString(TEXT("Opponent Turn..."));
-						FText OtherTurn = FText::FromString(OtherTurnString);
+						int32 TotalRemainChange = HasTurnPlayerState->GetPlayerGameState()->RemainChance
+							+ NextPlayerState->GetPlayerGameState()->RemainChance;
+						bool IsEnd = TotalRemainChange <= 0;
+						if (IsEnd)
+						{
+							EndGame(RoomId);
+						}
+						else
+						{
+							int32 RemainChance = NextPlayerState->GetPlayerGameState()->RemainChance;
+							FString YourTurnString = FString::Printf(TEXT("Your Turn!: Remain Chance: %d"), RemainChance);
+							FText YourTurn = FText::FromString(YourTurnString);
+							FString OtherTurnString(TEXT("Opponent Turn..."));
+							FText OtherTurn = FText::FromString(OtherTurnString);
 
-						SendNotificationToPlayer(NextPlayer, YourTurn);
-						SendNotificationToPlayer(HasTurnPlayer, OtherTurn);
+							SendNotificationToPlayer(NextPlayer, YourTurn);
+							SendNotificationToPlayer(HasTurnPlayer, OtherTurn);
+						}
 					}
 					GameSynchronization(RoomId);
 				}

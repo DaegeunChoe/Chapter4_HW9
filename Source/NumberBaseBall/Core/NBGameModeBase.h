@@ -24,6 +24,7 @@ public:
 	void LeaveRoom(ANBPlayerController* Exiting);
 
 	void StartGame(ANBPlayerController* HostPlayer);
+	void EndGame(int32 RoomId);
 
 protected:
 	UPROPERTY()
@@ -42,6 +43,7 @@ private:
 	FString GenerateRandomNumberString();
 	void SetRandomNumber(int32 RoomId);
 	void SetGameRoomTimer(int32 RoomId);
+	void ClearGameRoomTimer(int32 RoomId);
 
 	void OnGameTimerElapsed(int32 RoomId);
 	void AddPlayerList(AController* NewPlayer);
