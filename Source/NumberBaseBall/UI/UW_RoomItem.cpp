@@ -36,6 +36,22 @@ void UUW_RoomItem::NativeDestruct()
 	}
 }
 
+void UUW_RoomItem::EnableJoinButton()
+{
+	if (IsValid(JoinRoomButton))
+	{
+		JoinRoomButton->SetIsEnabled(true);
+	}
+}
+
+void UUW_RoomItem::DisableJoinButton()
+{
+	if (IsValid(JoinRoomButton))
+	{
+		JoinRoomButton->SetIsEnabled(false);
+	}
+}
+
 void UUW_RoomItem::OnJoinRoomClicked()
 {
 	ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();

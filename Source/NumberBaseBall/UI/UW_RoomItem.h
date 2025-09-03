@@ -17,6 +17,9 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 
+	void EnableJoinButton();
+	void DisableJoinButton();
+
 	int32 GetRoomId() const { return RoomId; }
 	void SetRoomId(int32 InRoomId) { RoomId = InRoomId; }
 

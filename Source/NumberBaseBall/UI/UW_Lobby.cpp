@@ -113,6 +113,18 @@ void UUW_Lobby::UpdateRoomList(const TArray<FGameRoom>& GameRooms)
 			NewItem->SetRoomId(GameRoom.RoomId);
 			NewItem->RoomNameTextBlock->SetText(GameRoom.RoomName);
 
+			bool IsFullGameRoom = (GameRoom.HostState != nullptr) && (GameRoom.GuestState != nullptr);
+			bool IsPlayingGameRoom = GameRoom.IsPlaying;
+			bool CanJoin = !IsFullGameRoom && !IsPlayingGameRoom;
+			if (CanJoin)
+			{
+				NewItem->EnableJoinButton();
+			}
+			else
+			{
+				NewItem->DisableJoinButton();
+			}
+
 			UUniformGridSlot* NewSlot = RoomListPanel->AddChildToUniformGrid(NewItem, Row, Col);
 			NewSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Fill);
 			NewSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Fill);
