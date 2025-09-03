@@ -163,9 +163,22 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 		ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
 		if (IsValid(NBPlayerState))
 		{
-			CachedRemainTime = NBPlayerState->GetPlayerGameState()->RemainTime;
-			CachedRemainTime = FMath::Clamp(CachedRemainTime, 0.0f, CachedRemainTime);
-			SetTimerText();
+			if (GameRoomInfo)
+			{
+				if (GameRoomInfo->IsPlaying)
+				{
+					CachedRemainTime = NBPlayerState->GetPlayerGameState()->RemainTime;
+					CachedRemainTime = FMath::Clamp(CachedRemainTime, 0.0f, CachedRemainTime);
+					SetTimerText();
+				}
+				else
+				{
+					if (IsValid(TimerTextBlock))
+					{
+						TimerTextBlock->SetVisibility(ESlateVisibility::Hidden);
+					}
+				}
+			}
 		}
 	}
 }
@@ -233,6 +246,8 @@ void UUW_GameRoom::SetTimerText()
 		}
 		FString TimeString = FString::Printf(TEXT("Time: %.2f"), RemainTime);
 		FText TimeText = FText::FromString(TimeString);
+
+		TimerTextBlock->SetVisibility(ESlateVisibility::Visible);
 		TimerTextBlock->SetText(TimeText);
 	}
 }

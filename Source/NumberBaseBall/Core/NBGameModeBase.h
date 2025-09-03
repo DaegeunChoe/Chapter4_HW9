@@ -25,6 +25,7 @@ public:
 	void GuessNumber(ANBPlayerController* Player, const FText& GuessNumberText);
 
 	void StartGame(ANBPlayerController* HostPlayer);
+	void EndGame(ANBPlayerController* Winner, int32 RoomId);
 	void EndGame(int32 RoomId);
 
 protected:

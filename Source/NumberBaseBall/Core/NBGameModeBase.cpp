@@ -161,9 +161,9 @@ void ANBGameModeBase::GuessNumber(ANBPlayerController* Player, const FText& Gues
 					SendNotificationToPlayer(GameRoom->Guest, NotificationText);
 
 
-					if (Result.Equals(FString(TEXT("3S0B"))))
+					if (Result.Equals(FString(TEXT("S3B0"))))
 					{
-
+						EndGame(Player, GameRoom->RoomId);
 					}
 					else
 					{
@@ -253,6 +253,30 @@ void ANBGameModeBase::StartGame(ANBPlayerController* HostPlayer)
 				GameRoom->IsPlaying = true;
 				GameSynchronization(GameRoom->RoomId);
 			}
+		}
+	}
+}
+
+void ANBGameModeBase::EndGame(ANBPlayerController* Winner, int32 RoomId)
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+		if (GameRoom)
+		{
+			ClearGameRoomTimer(GameRoom->RoomId);
+		
+			ANBPlayerState* HostPlayerState = Winner->GetPlayerState<ANBPlayerState>();
+			FString WinnerNickName = IsValid(HostPlayerState) ? HostPlayerState->GetNickName() : TEXT("NONE");
+
+			FString StartString = FString::Printf(TEXT("Game End! Winner: %s"), *WinnerNickName);
+			FText StartText = FText::FromString(StartString);
+			SendNotificationToPlayer(GameRoom->Host, StartText);
+			SendNotificationToPlayer(GameRoom->Guest, StartText);
+
+			GameRoom->IsPlaying = false;
+			GameSynchronization(GameRoom->RoomId);
 		}
 	}
 }
