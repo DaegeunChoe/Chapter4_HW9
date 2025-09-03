@@ -144,6 +144,30 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 			GameStartButton->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
+
+	if (IsValid(ExitRoomButton))
+	{
+		if (GameRoomInfo->IsPlaying)
+		{
+			ExitRoomButton->SetVisibility(ESlateVisibility::Hidden);
+		}
+		else
+		{
+			ExitRoomButton->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+
+	ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
+	if (IsValid(NBPlayerController))
+	{
+		ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
+		if (IsValid(NBPlayerState))
+		{
+			CachedRemainTime = NBPlayerState->GetPlayerGameState()->RemainTime;
+			CachedRemainTime = FMath::Clamp(CachedRemainTime, 0.0f, CachedRemainTime);
+			SetTimerText();
+		}
+	}
 }
 
 void UUW_GameRoom::OnCommitChatMessage(const FText& Text, ETextCommit::Type CommitMethod)
@@ -181,6 +205,27 @@ void UUW_GameRoom::OnExitRoomButtonClicked()
 	if (IsValid(NBPlayerController))
 	{
 		NBPlayerController->ServerRPCLeaveRoom();
+	}
+}
+
+void UUW_GameRoom::SetTimerText()
+{
+	if (IsValid(TimerTextBlock))
+	{
+		float RemainTime = CachedRemainTime;
+		ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
+		if (IsValid(NBPlayerController))
+		{
+			ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
+			if (IsValid(NBPlayerState))
+			{
+				RemainTime = NBPlayerState->GetPlayerGameState()->RemainTime;
+				RemainTime = FMath::Clamp(RemainTime, 0.0f, RemainTime);
+			}
+		}
+		FString TimeString = FString::Printf(TEXT("Time: %.2f"), RemainTime);
+		FText TimeText = FText::FromString(TimeString);
+		TimerTextBlock->SetText(TimeText);
 	}
 }
 

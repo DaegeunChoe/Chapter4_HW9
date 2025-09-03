@@ -40,6 +40,7 @@ void ANBPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 
 	DOREPLIFETIME(ThisClass, NickName);
 	DOREPLIFETIME(ThisClass, RoomId);
+	DOREPLIFETIME(ThisClass, PlayerGameState);
 }
 
 

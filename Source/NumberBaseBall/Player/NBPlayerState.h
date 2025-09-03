@@ -54,7 +54,7 @@ public:
 	bool ReduceTimeAndCheck(float DeltaTime)
 	{
 		RemainTime -= DeltaTime;
-		if (RemainTime <= 0)
+		if (RemainTime < 0)
 		{
 			return true;
 		}

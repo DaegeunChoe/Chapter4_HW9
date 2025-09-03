@@ -38,6 +38,9 @@ public:
 	TObjectPtr<UTextBlock> GuestTextBlock;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UTextBlock> TimerTextBlock;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UEditableTextBox> InputEditableTextBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
@@ -45,6 +48,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> ExitRoomButton;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (AllowPrivateAccess))
+	float CachedRemainTime = 0.0f;
 
 private:
 	UFUNCTION()
@@ -55,4 +62,6 @@ private:
 
 	UFUNCTION()
 	void OnExitRoomButtonClicked();
+
+	void SetTimerText();
 };
