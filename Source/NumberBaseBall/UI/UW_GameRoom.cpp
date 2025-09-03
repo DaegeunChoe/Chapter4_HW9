@@ -196,8 +196,7 @@ void UUW_GameRoom::OnCommitChatMessage(const FText& Text, ETextCommit::Type Comm
 			}
 			else
 			{
-				ANBPlayerState* NBPlayerState = NBPlayerController->GetValidPlayerState<ANBPlayerState>();
-				FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
+				FString NickName = NBPlayerController->GetNickName();
 				FString FormatString = FString::Printf(TEXT("%s: %s"), *NickName, *Text.ToString());
 				FText ChatMessage = FText::FromString(FormatString);
 				NBPlayerController->ServerRPCSendChatMessage(ChatMessage);
