@@ -41,11 +41,17 @@ public:
 	TObjectPtr<UEditableTextBox> InputEditableTextBox;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UButton> GameStartButton;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> ExitRoomButton;
 
 private:
 	UFUNCTION()
 	void OnCommitChatMessage(const FText& Text, ETextCommit::Type CommitMethod);
+
+	UFUNCTION()
+	void OnGameStartButtonClicked();
 
 	UFUNCTION()
 	void OnExitRoomButtonClicked();

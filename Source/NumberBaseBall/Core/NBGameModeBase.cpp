@@ -135,6 +135,82 @@ void ANBGameModeBase::LeaveRoom(ANBPlayerController* Exiting)
 	}
 }
 
+void ANBGameModeBase::StartGame(ANBPlayerController* HostPlayer)
+{
+	if (!IsValid(HostPlayer))
+	{
+		return;
+	}
+
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		ANBPlayerState* HostPlayerState = HostPlayer->GetPlayerState<ANBPlayerState>();
+		if (IsValid(HostPlayerState))
+		{
+			int32 RoomId = HostPlayerState->GetRoomId();
+			if (RoomId != -1)
+			{
+				FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+
+				if (GameRoom->Host != HostPlayer)
+				{
+					return;
+				}
+
+				SetRandomNumber(GameRoom->RoomId);
+				SetGameRoomTimer(GameRoom->RoomId);
+
+				int32 Dice = FMath::RandRange(0, 1);
+				
+				if (IsValid(GameRoom->HostState) && (IsValid(GameRoom->GuestState)))
+				{
+					if (Dice == 1)
+					{
+						GameRoom->HostState->GetPlayerGameState()->GetTurn(TurnDuration);
+						GameRoom->GuestState->GetPlayerGameState()->ReleaseTurn();
+					}
+					else
+					{
+						GameRoom->HostState->GetPlayerGameState()->ReleaseTurn();
+						GameRoom->GuestState->GetPlayerGameState()->GetTurn(TurnDuration);
+					}
+				}
+
+				if (IsValid(GameRoom->Host) && IsValid(GameRoom->Guest))
+				{
+					FString StartString(TEXT("Game Start!"));
+					FText StartText = FText::FromString(StartString);
+					SendNotificationToPlayer(GameRoom->Host, StartText);
+					SendNotificationToPlayer(GameRoom->Guest, StartText);
+
+					FString YourTurnString(TEXT("당신의 차례입니다..."));
+					FString OtherTurnString(TEXT("상대방의 차례입니다..."));
+					FText YourTurn = FText::FromString(YourTurnString);
+					FText OtherTurn = FText::FromString(OtherTurnString);
+					if (Dice == 1)
+					{
+						SendNotificationToPlayer(GameRoom->Host, YourTurn);
+						SendNotificationToPlayer(GameRoom->Guest, OtherTurn);
+					}
+					else
+					{
+						SendNotificationToPlayer(GameRoom->Host, OtherTurn);
+						SendNotificationToPlayer(GameRoom->Guest, YourTurn);
+					}
+				}
+
+				if (GameRoom)
+				{
+					GameRoom->IsPlaying = true;
+				}
+
+				GameSynchronization(GameRoom->RoomId);
+			}
+		}
+	}
+}
+
 void ANBGameModeBase::InitPlayerStateUsingOptions(APlayerController* PlayerController, const FString& Options)
 {
 	ANBPlayerController* NBPlayerController = Cast<ANBPlayerController>(PlayerController);
@@ -164,6 +240,84 @@ void ANBGameModeBase::SendNotificationToLobby(const FText& Notification)
 	for (ANBPlayerController* Player : GetPlayersInLobby())
 	{
 		Player->ClientRPCReceiveChatMessage(NotificationText);
+	}
+}
+
+void ANBGameModeBase::SendNotificationToPlayer(ANBPlayerController* PlayerController, const FText& Notification)
+{
+	FString FormatText = FString::Printf(TEXT("[Game] %s"), *Notification.ToString());
+	FText NotificationText = FText::FromString(FormatText);
+	PlayerController->ClientRPCReceiveChatMessage(NotificationText);
+}
+
+void ANBGameModeBase::GameSynchronization(int32 RoomId)
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+		if (GameRoom)
+		{
+		}
+	}
+}
+
+FString ANBGameModeBase::GenerateRandomNumberString()
+{
+	return FString();
+}
+
+void ANBGameModeBase::SetRandomNumber(int32 RoomId)
+{
+	FString RandomNumberString = GenerateRandomNumberString();
+	GameRoomAnwsers.Add(RoomId, RandomNumberString);
+}
+
+void ANBGameModeBase::SetGameRoomTimer(int32 RoomId)
+{
+	FTimerDelegate TimerDel;
+	FTimerHandle GameRoomTimerHandle;
+	TimerDel.BindUObject(this, &ThisClass::OnGameTimerElapsed, RoomId);
+	GetWorldTimerManager().SetTimer(GameRoomTimerHandle, TimerDel, 1.0f, true);
+	GameRoomTimers.Add(RoomId, MoveTemp(GameRoomTimerHandle));
+}
+
+void ANBGameModeBase::OnGameTimerElapsed(int32 RoomId)
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+		if (GameRoom)
+		{
+			ANBPlayerState* HasTurnPlayerState = nullptr;
+			ANBPlayerState* NextPlayerState = nullptr;
+			
+			if (GameRoom->HostState && GameRoom->HostState->GetPlayerGameState() && GameRoom->HostState->GetPlayerGameState()->HasTurn)
+			{
+				HasTurnPlayerState = GameRoom->HostState;
+				NextPlayerState = GameRoom->GuestState;
+			}
+			else if (GameRoom->GuestState && GameRoom->GuestState->GetPlayerGameState() && GameRoom->GuestState->GetPlayerGameState()->HasTurn)
+			{
+				HasTurnPlayerState = GameRoom->GuestState;
+				NextPlayerState = GameRoom->HostState;
+			}
+
+			if (IsValid(HasTurnPlayerState) && IsValid(NextPlayerState))
+			{
+				if (HasTurnPlayerState->GetPlayerGameState() && NextPlayerState->GetPlayerGameState())
+				{
+					bool IsDone = HasTurnPlayerState->GetPlayerGameState()->ReduceTimeAndCheck(1.0f);
+					if (IsDone)
+					{
+						HasTurnPlayerState->GetPlayerGameState()->ReleaseTurn();
+						NextPlayerState->GetPlayerGameState()->GetTurn(TurnDuration);
+					}
+					GameSynchronization(RoomId);
+				}
+			}
+		}
 	}
 }
 

@@ -26,6 +26,15 @@ void UUW_GameRoom::NativeConstruct()
 		}
 	}
 
+	if (IsValid(GameStartButton))
+	{
+		bool IsAlreadyBounded = GameStartButton->OnClicked.IsAlreadyBound(this, &ThisClass::OnGameStartButtonClicked);;
+		if (!IsAlreadyBounded)
+		{
+			GameStartButton->OnClicked.AddDynamic(this, &ThisClass::OnGameStartButtonClicked);
+		}
+	}
+
 	if (IsValid(ExitRoomButton))
 	{
 		bool IsAlreadyBounded = ExitRoomButton->OnClicked.IsAlreadyBound(this, &ThisClass::OnExitRoomButtonClicked);;
@@ -46,6 +55,15 @@ void UUW_GameRoom::NativeDestruct()
 		if (IsAlreadyBounded)
 		{
 			InputEditableTextBox->OnTextCommitted.RemoveDynamic(this, &ThisClass::OnCommitChatMessage);
+		}
+	}
+
+	if (IsValid(GameStartButton))
+	{
+		bool IsAlreadyBounded = GameStartButton->OnClicked.IsAlreadyBound(this, &ThisClass::OnGameStartButtonClicked);;
+		if (IsAlreadyBounded)
+		{
+			GameStartButton->OnClicked.RemoveDynamic(this, &ThisClass::OnGameStartButtonClicked);
 		}
 	}
 
@@ -77,6 +95,7 @@ void UUW_GameRoom::InitTextBlocks()
 
 void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 {
+	int32 PlayerCountInRoom = 0;
 	if (IsValid(HostTextBlock))
 	{
 		FString HostNickName;
@@ -85,6 +104,7 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 			if (IsValid(GameRoomInfo->HostState))
 			{
 				HostNickName = GameRoomInfo->HostState->GetNickName();
+				PlayerCountInRoom++;
 			}
 		}
 		FString FormatText = FString::Printf(TEXT("Host: %s"), *HostNickName);
@@ -101,12 +121,28 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 			if (IsValid(GameRoomInfo->GuestState))
 			{
 				GuestNickName = GameRoomInfo->GuestState->GetNickName();
+				PlayerCountInRoom++;
 			}
 		}
 		FString FormatText = FString::Printf(TEXT("Guest: %s"), *GuestNickName);
 
 		FText GuestText = FText::FromString(FormatText);
 		GuestTextBlock->SetText(GuestText);
+	}
+
+	if (IsValid(GameStartButton))
+	{
+		if (PlayerCountInRoom >= 2 && !GameRoomInfo->IsPlaying)
+		{
+			if (GameRoomInfo->Host == GetOwningPlayer())
+			{
+				GameStartButton->SetVisibility(ESlateVisibility::Visible);
+			}
+		}
+		else
+		{
+			GameStartButton->SetVisibility(ESlateVisibility::Hidden);
+		}
 	}
 }
 
@@ -127,6 +163,15 @@ void UUW_GameRoom::OnCommitChatMessage(const FText& Text, ETextCommit::Type Comm
 		{
 			InputEditableTextBox->SetText(FText());
 		}
+	}
+}
+
+void UUW_GameRoom::OnGameStartButtonClicked()
+{
+	ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
+	if (IsValid(NBPlayerController))
+	{
+		NBPlayerController->ServerRPCStartGame();
 	}
 }
 

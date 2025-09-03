@@ -73,6 +73,17 @@ void ANBGameStateBase::OnRep_GameRooms()
 		if (IsValid(NBPlayerController))
 		{
 			NBPlayerController->UpdateRooms(GameRooms);
+
+			ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
+			if (IsValid(NBPlayerState))
+			{
+				int32 RoomId = NBPlayerState->GetRoomId();
+				FGameRoom* GameRoom = GetGameRoom(RoomId);
+				if (GameRoom)
+				{
+					NBPlayerController->UpdateGameRoomInfo(GameRoom);
+				}
+			}
 		}
 	}
 }

@@ -38,6 +38,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPCLeaveRoom();
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPCStartGame();
+
 	UFUNCTION(Client, Reliable)
 	void ClientRPCMakeRoom();
 
@@ -49,6 +52,9 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ClientRPCGuestLeavesRoom();
+
+	//UFUNCTION(Client, Reliable)
+	//void ClientRPCGameSynchronization();
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NBPlayerController|Widget")

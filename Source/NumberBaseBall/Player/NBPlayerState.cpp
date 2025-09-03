@@ -53,6 +53,11 @@ void ANBPlayerState::OnRep_RoomId()
 	NotifyToLocalPlayerController();
 }
 
+void ANBPlayerState::OnRep_PlayerGameState()
+{
+	TryNotifyToLocalPlayerController();
+}
+
 void ANBPlayerState::OnRep_Owner()
 {
 	NotifyToLocalPlayerController();

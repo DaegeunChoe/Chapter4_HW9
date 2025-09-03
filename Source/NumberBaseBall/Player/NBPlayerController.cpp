@@ -149,6 +149,18 @@ void ANBPlayerController::ServerRPCLeaveRoom_Implementation()
 	}
 }
 
+void ANBPlayerController::ServerRPCStartGame_Implementation()
+{
+	if (HasAuthority())
+	{
+		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
+		if (IsValid(NBGameModeBase))
+		{
+			NBGameModeBase->StartGame(this);
+		}
+	}
+}
+
 void ANBPlayerController::ClientRPCMakeRoom_Implementation()
 {
 	if (!HasAuthority() && IsLocalController())

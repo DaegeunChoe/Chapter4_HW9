@@ -16,8 +16,11 @@ public:
 	FGameRoom()
 	{
 		RoomId = -1;
+		IsPlaying = false;
 		Host = nullptr;
+		HostState = nullptr;
 		Guest = nullptr;
+		GuestState = nullptr;
 	}
 
 	static int32 NextRoomId;
@@ -27,6 +30,9 @@ public:
 
 	UPROPERTY()
 	FText RoomName;
+
+	UPROPERTY()
+	bool IsPlaying;
 
 	UPROPERTY()
 	TObjectPtr<ANBPlayerController> Host;

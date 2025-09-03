@@ -13,6 +13,44 @@ enum class EPlayerLocation : uint8
 	Max
 };
 
+USTRUCT()
+struct FPlayerGameState
+{
+	GENERATED_BODY()
+
+public:
+	FPlayerGameState()
+	{
+		ReleaseTurn();
+	}
+
+	UPROPERTY()
+	float RemainTime;
+
+	UPROPERTY()
+	bool HasTurn;
+
+	void GetTurn(float Duration)
+	{
+		RemainTime = Duration;
+		HasTurn = true;
+	}
+	void ReleaseTurn()
+	{
+		RemainTime = 0.0f;
+		HasTurn = false;
+	}
+	bool ReduceTimeAndCheck(float DeltaTime)
+	{
+		RemainTime -= DeltaTime;
+		if (RemainTime <= 0)
+		{
+			return true;
+		}
+		return false;
+	}
+};
+
 UCLASS()
 class NUMBERBASEBALL_API ANBPlayerState : public APlayerState
 {
@@ -35,6 +73,8 @@ public:
 	void SetPlayerLocationToLobby();
 	void SetPlayerLocationToGameRoom(int32 InRoomId);
 
+	FPlayerGameState* GetPlayerGameState() { return &PlayerGameState; }
+
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_NickName)
 	FString NickName;
@@ -45,12 +85,18 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_RoomId)
 	int32 RoomId;
 
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerGameState)
+	FPlayerGameState PlayerGameState;
+
 private:
 	UFUNCTION()
 	void OnRep_NickName();
 
 	UFUNCTION()
 	void OnRep_RoomId();
+
+	UFUNCTION()
+	void OnRep_PlayerGameState();
 
 	virtual void OnRep_Owner() override;
 
