@@ -161,6 +161,18 @@ void ANBPlayerController::ServerRPCStartGame_Implementation()
 	}
 }
 
+void ANBPlayerController::ServerRPCSendGuessNumber_Implementation(const FText& GuessNumberText)
+{
+	if (HasAuthority())
+	{
+		ANBGameModeBase* NBGameModeBase = GetGameMode<ANBGameModeBase>();
+		if (IsValid(NBGameModeBase))
+		{
+			NBGameModeBase->GuessNumber(this, GuessNumberText);
+		}
+	}
+}
+
 void ANBPlayerController::ClientRPCMakeRoom_Implementation()
 {
 	if (!HasAuthority() && IsLocalController())

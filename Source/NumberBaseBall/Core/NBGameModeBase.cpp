@@ -135,6 +135,53 @@ void ANBGameModeBase::LeaveRoom(ANBPlayerController* Exiting)
 	}
 }
 
+void ANBGameModeBase::GuessNumber(ANBPlayerController* Player, const FText& GuessNumberText)
+{
+	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
+	if (IsValid(NBGameStateBase))
+	{
+		ANBPlayerState* PlayerState = Player->GetPlayerState<ANBPlayerState>();
+		if (IsValid(PlayerState))
+		{
+			int32 RoomId = PlayerState->GetRoomId();
+			FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
+			if (GameRoom)
+			{
+				if (PlayerState->GetPlayerGameState()->HasTurn)
+				{
+					const FString& NickName = PlayerState->GetNickName();
+					const FString& GuessNumberString = GuessNumberText.ToString();
+
+					FString Answer = GameRoomAnwsers[GameRoom->RoomId];
+					FString Result = JudgeResult(Answer, GuessNumberText.ToString());
+
+					FString NotificationString = FString::Printf(TEXT("%s guesses %s, result is %s"), *NickName, *GuessNumberString, *Result);
+					FText NotificationText = FText::FromString(NotificationString);
+					SendNotificationToPlayer(GameRoom->Host, NotificationText);
+					SendNotificationToPlayer(GameRoom->Guest, NotificationText);
+
+
+					if (Result.Equals(FString(TEXT("3S0B"))))
+					{
+
+					}
+					else
+					{
+						PlayerState->GetPlayerGameState()->RemainTime = 0.0f;
+						OnGameTimerElapsed(GameRoom->RoomId);
+					}
+				}
+				else
+				{
+					FString NotificationString(TEXT("It's not your turn..."));
+					FText NotificationText = FText::FromString(NotificationString);
+					SendNotificationToPlayer(Player, NotificationText);
+				}
+			}
+		}
+	}
+}
+
 void ANBGameModeBase::StartGame(ANBPlayerController* HostPlayer)
 {
 	if (!IsValid(HostPlayer))
@@ -264,9 +311,12 @@ void ANBGameModeBase::SendNotificationToLobby(const FText& Notification)
 
 void ANBGameModeBase::SendNotificationToPlayer(ANBPlayerController* PlayerController, const FText& Notification)
 {
-	FString FormatText = FString::Printf(TEXT("[Game] %s"), *Notification.ToString());
-	FText NotificationText = FText::FromString(FormatText);
-	PlayerController->ClientRPCReceiveChatMessage(NotificationText);
+	if (IsValid(PlayerController))
+	{
+		FString FormatText = FString::Printf(TEXT("[Game] %s"), *Notification.ToString());
+		FText NotificationText = FText::FromString(FormatText);
+		PlayerController->ClientRPCReceiveChatMessage(NotificationText);
+	}
 }
 
 void ANBGameModeBase::GameSynchronization(int32 RoomId)
@@ -283,7 +333,22 @@ void ANBGameModeBase::GameSynchronization(int32 RoomId)
 
 FString ANBGameModeBase::GenerateRandomNumberString()
 {
-	return FString();
+	TArray<int32> NumberBox;
+	for (int32 N = 1; N <= 9; N++)
+	{
+		NumberBox.Add(N);
+	}
+
+	FMath::RandInit(FDateTime::Now().GetTicks());
+	
+	FString Result;
+	for (int32 NumCount = 0; NumCount < 3; NumCount++)
+	{
+		int32 Index = FMath::RandRange(0, NumberBox.Num() - 1);
+		Result.Append(FString::FromInt(NumberBox[Index]));
+		NumberBox.RemoveAt(Index);
+	}
+	return Result;
 }
 
 void ANBGameModeBase::SetRandomNumber(int32 RoomId)
@@ -297,7 +362,7 @@ void ANBGameModeBase::SetGameRoomTimer(int32 RoomId)
 	FTimerDelegate TimerDel;
 	FTimerHandle GameRoomTimerHandle;
 	TimerDel.BindUObject(this, &ThisClass::OnGameTimerElapsed, RoomId);
-	GetWorldTimerManager().SetTimer(GameRoomTimerHandle, TimerDel, 1.0f, true);
+	GetWorldTimerManager().SetTimer(GameRoomTimerHandle, TimerDel, TimerInterval, true);
 	GameRoomTimers.Add(RoomId, MoveTemp(GameRoomTimerHandle));
 }
 
@@ -310,6 +375,42 @@ void ANBGameModeBase::ClearGameRoomTimer(int32 RoomId)
 			GetWorldTimerManager().ClearTimer(GameRoomTimers[RoomId]);
 			GameRoomTimers[RoomId].Invalidate();
 		}
+	}
+}
+
+FString ANBGameModeBase::JudgeResult(const FString& InSecretNumberString, const FString& InGuessNumberString)
+{
+	int32 StrikeCount = 0;
+	int32 BallCount = 0;
+
+	UE_LOG(LogTemp, Display, TEXT("InSecretNumberString: %s"), *InSecretNumberString);
+	UE_LOG(LogTemp, Display, TEXT("InGuessNumberString: %s"), *InGuessNumberString);
+
+	for (int32 A = 0; A < 3; A++)
+	{
+		for (int32 B = 0; B < 3; B++)
+		{
+			if (InSecretNumberString[B] == InGuessNumberString[A])
+			{
+				if (A == B)
+				{
+					StrikeCount++;
+				}
+				else
+				{
+					BallCount++;
+				}
+			}
+		}
+	}
+
+	if (StrikeCount + BallCount == 0)
+	{
+		return TEXT("Out");
+	}
+	else
+	{
+		return FString::Printf(TEXT("S%dB%d"), StrikeCount, BallCount);
 	}
 }
 
@@ -345,7 +446,7 @@ void ANBGameModeBase::OnGameTimerElapsed(int32 RoomId)
 			{
 				if (HasTurnPlayerState->GetPlayerGameState() && NextPlayerState->GetPlayerGameState())
 				{
-					bool IsTurnEnd = HasTurnPlayerState->GetPlayerGameState()->ReduceTimeAndCheck(1.0f);
+					bool IsTurnEnd = HasTurnPlayerState->GetPlayerGameState()->ReduceTimeAndCheck(TimerInterval);
 					if (IsTurnEnd)
 					{
 						HasTurnPlayerState->GetPlayerGameState()->ReleaseTurn();

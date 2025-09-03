@@ -41,6 +41,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerRPCStartGame();
 
+	UFUNCTION(Server, Reliable)
+	void ServerRPCSendGuessNumber(const FText& GuessNumberText);
+
 	UFUNCTION(Client, Reliable)
 	void ClientRPCMakeRoom();
 

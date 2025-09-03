@@ -177,11 +177,19 @@ void UUW_GameRoom::OnCommitChatMessage(const FText& Text, ETextCommit::Type Comm
 		ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
 		if (IsValid(NBPlayerController))
 		{
-			ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
-			FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
-			FString FormatString = FString::Printf(TEXT("%s: %s"), *NickName, *Text.ToString());
-			FText ChatMessage = FText::FromString(FormatString);
-			NBPlayerController->ServerRPCSendChatMessage(ChatMessage);
+			bool IsGuessNumber = IsGuessNumberString(Text.ToString());
+			if (IsGuessNumber)
+			{
+				NBPlayerController->ServerRPCSendGuessNumber(Text);
+			}
+			else
+			{
+				ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
+				FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
+				FString FormatString = FString::Printf(TEXT("%s: %s"), *NickName, *Text.ToString());
+				FText ChatMessage = FText::FromString(FormatString);
+				NBPlayerController->ServerRPCSendChatMessage(ChatMessage);
+			}
 		}
 		if (IsValid(InputEditableTextBox))
 		{
@@ -227,6 +235,35 @@ void UUW_GameRoom::SetTimerText()
 		FText TimeText = FText::FromString(TimeString);
 		TimerTextBlock->SetText(TimeText);
 	}
+}
+
+bool UUW_GameRoom::IsGuessNumberString(const FString& InNumberString)
+{
+	if (InNumberString.Len() != 3)
+	{
+		return false;
+	}
+	else
+	{
+		bool bIsUnique = true;
+		TSet<TCHAR> UniqueDigits;
+		for (TCHAR C : InNumberString)
+		{
+			if (FChar::IsDigit(C) == false || C == '0')
+			{
+				return false;
+			}
+			else
+			{
+				UniqueDigits.Add(C);
+			}
+		}
+		if (UniqueDigits.Num() == 3)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void UUW_GameRoom::AddChatMessage(const FText& NewChatMessage)

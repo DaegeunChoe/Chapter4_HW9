@@ -22,6 +22,7 @@ public:
 	void MakeRoom(ANBPlayerController* HostPlayer);
 	void JoinRoom(ANBPlayerController* GuestPlayer, int32 RoomId);
 	void LeaveRoom(ANBPlayerController* Exiting);
+	void GuessNumber(ANBPlayerController* Player, const FText& GuessNumberText);
 
 	void StartGame(ANBPlayerController* HostPlayer);
 	void EndGame(int32 RoomId);
@@ -45,10 +46,16 @@ private:
 	void SetGameRoomTimer(int32 RoomId);
 	void ClearGameRoomTimer(int32 RoomId);
 
+	FString JudgeResult(const FString& InSecretNumberString, const FString& InGuessNumberString);
+
 	void OnGameTimerElapsed(int32 RoomId);
 	void AddPlayerList(AController* NewPlayer);
 	void RemovePlayerList(AController* Exiting);
 
 	UPROPERTY(EditDefaultsOnly, Category = "NBGameModeBase|GameConfiguration")
 	float TurnDuration = 15.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "NBGameModeBase|ServerConfiguration")
+	float TimerInterval = 0.5f;
+
 };

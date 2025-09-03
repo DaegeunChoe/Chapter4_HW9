@@ -64,4 +64,5 @@ private:
 	void OnExitRoomButtonClicked();
 
 	void SetTimerText();
+	bool IsGuessNumberString(const FString& InNumberString);
 };
