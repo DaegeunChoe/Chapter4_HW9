@@ -23,6 +23,8 @@ public:
 	void UpdateRooms(const TArray<FGameRoom>& GameRooms);
 	void UpdateGameRoomInfo(const FGameRoom* GameRoom);
 
+	const FString& GetNickName();
+
 	UFUNCTION(Server, Reliable)
 	void ServerRPCSendChatMessage(const FText& ChatMessage);
 
@@ -56,9 +58,6 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPCGuestLeavesRoom();
 
-	//UFUNCTION(Client, Reliable)
-	//void ClientRPCGameSynchronization();
-
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NBPlayerController|Widget")
 	TSubclassOf<UUW_Lobby> LobbyWidgetClass;
@@ -89,6 +88,9 @@ private:
 
 	template <typename T>
 	T* GetGameState();
+
+
+	static FString UnknownNickName;
 };
 
 template<typename T>

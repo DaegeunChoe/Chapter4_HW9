@@ -6,6 +6,8 @@
 #include "UI/UW_GameRoom.h"
 #include "UObject/WeakObjectPtrTemplates.h"
 
+FString ANBPlayerController::UnknownNickName(TEXT("Unknown"));
+
 void ANBPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -71,6 +73,16 @@ void ANBPlayerController::UpdateGameRoomInfo(const FGameRoom* GameRoom)
 			}
 		}
 	}
+}
+
+const FString& ANBPlayerController::GetNickName()
+{
+	ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
+	if (IsValid(NBPlayerState))
+	{
+		return NBPlayerState->GetNickName();
+	}
+	return UnknownNickName;
 }
 
 void ANBPlayerController::ServerRPCSendChatMessage_Implementation(const FText& ChatMessage)
