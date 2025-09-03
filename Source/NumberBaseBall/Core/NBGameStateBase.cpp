@@ -32,9 +32,16 @@ bool ANBGameStateBase::JoinGameRoom(ANBPlayerController* GuestPlayer, int32 Targ
 	FGameRoom* GameRoom = GetGameRoom(TargetRoomId);
 	if (GameRoom)
 	{
-		GameRoom->Guest = GuestPlayer;
-		GameRoom->GuestState = GuestPlayer->GetPlayerState<ANBPlayerState>();
-		return true;
+		if (GameRoom->Guest)
+		{
+			return false;
+		}
+		else
+		{
+			GameRoom->Guest = GuestPlayer;
+			GameRoom->GuestState = GuestPlayer->GetPlayerState<ANBPlayerState>();
+			return true;
+		}
 	}
 	return false;
 }
