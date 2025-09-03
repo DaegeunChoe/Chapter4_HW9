@@ -1,5 +1,6 @@
 #include "Core/NBGameModeBase.h"
 #include "Core/NBGameStateBase.h"
+#include "Core/NBGameRoom.h"
 #include "Player/Main/NBPlayerController.h"
 #include "Player/Main/NBPlayerState.h"
 

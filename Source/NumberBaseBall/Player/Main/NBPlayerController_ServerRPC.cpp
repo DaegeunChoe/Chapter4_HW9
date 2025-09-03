@@ -2,6 +2,7 @@
 #include "Player/Main/NBPlayerState.h"
 #include "Core/NBGameModeBase.h"
 #include "Core/NBGameStateBase.h"
+#include "Core/NBGameRoom.h"
 
 void ANBPlayerController::ServerRPCSendChatMessage_Implementation(const FText& ChatMessage)
 {

@@ -1,6 +1,7 @@
 #include "UI/UW_Lobby.h"
 #include "UI/UW_RoomItem.h"
 #include "Core/NBGameStateBase.h"
+#include "Core/NBGameRoom.h"
 #include "Player/Main/NBPlayerController.h"
 #include "Player/Main/NBPlayerState.h"
 #include "Components/VerticalBox.h"
