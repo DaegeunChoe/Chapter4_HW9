@@ -44,7 +44,6 @@ private:
 	void SetGameRoomTimer(int32 RoomId);
 
 	void OnGameTimerElapsed(int32 RoomId);
-
 	void AddPlayerList(AController* NewPlayer);
 	void RemovePlayerList(AController* Exiting);
 

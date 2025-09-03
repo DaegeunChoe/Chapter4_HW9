@@ -21,14 +21,24 @@ struct FPlayerGameState
 public:
 	FPlayerGameState()
 	{
-		ReleaseTurn();
+		RemainChance = 0;
+		RemainTime = 0.0f;
+		HasTurn = false;
 	}
+
+	UPROPERTY()
+	int32 RemainChance;
 
 	UPROPERTY()
 	float RemainTime;
 
 	UPROPERTY()
 	bool HasTurn;
+
+	void Start()
+	{
+		RemainChance = 3;
+	}
 
 	void GetTurn(float Duration)
 	{
@@ -38,6 +48,7 @@ public:
 	void ReleaseTurn()
 	{
 		RemainTime = 0.0f;
+		RemainChance--;
 		HasTurn = false;
 	}
 	bool ReduceTimeAndCheck(float DeltaTime)

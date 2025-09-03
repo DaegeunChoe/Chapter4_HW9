@@ -165,14 +165,14 @@ void ANBGameModeBase::StartGame(ANBPlayerController* HostPlayer)
 				
 				if (IsValid(GameRoom->HostState) && (IsValid(GameRoom->GuestState)))
 				{
+					GameRoom->HostState->GetPlayerGameState()->Start();
+					GameRoom->GuestState->GetPlayerGameState()->Start();
 					if (Dice == 1)
 					{
 						GameRoom->HostState->GetPlayerGameState()->GetTurn(TurnDuration);
-						GameRoom->GuestState->GetPlayerGameState()->ReleaseTurn();
 					}
 					else
 					{
-						GameRoom->HostState->GetPlayerGameState()->ReleaseTurn();
 						GameRoom->GuestState->GetPlayerGameState()->GetTurn(TurnDuration);
 					}
 				}
@@ -184,17 +184,21 @@ void ANBGameModeBase::StartGame(ANBPlayerController* HostPlayer)
 					SendNotificationToPlayer(GameRoom->Host, StartText);
 					SendNotificationToPlayer(GameRoom->Guest, StartText);
 
-					FString YourTurnString(TEXT("당신의 차례입니다..."));
-					FString OtherTurnString(TEXT("상대방의 차례입니다..."));
-					FText YourTurn = FText::FromString(YourTurnString);
+					FString OtherTurnString(TEXT("Opponent Turn..."));
 					FText OtherTurn = FText::FromString(OtherTurnString);
 					if (Dice == 1)
 					{
+						int32 RemainChance = GameRoom->HostState->GetPlayerGameState()->RemainChance;
+						FString YourTurnString = FString::Printf(TEXT("Your Turn!: Remain Chance: %d"), RemainChance);
+						FText YourTurn = FText::FromString(YourTurnString);
 						SendNotificationToPlayer(GameRoom->Host, YourTurn);
 						SendNotificationToPlayer(GameRoom->Guest, OtherTurn);
 					}
 					else
 					{
+						int32 RemainChance = GameRoom->GuestState->GetPlayerGameState()->RemainChance;
+						FString YourTurnString = FString::Printf(TEXT("Your Turn!: Remain Chance: %d"), RemainChance);
+						FText YourTurn = FText::FromString(YourTurnString);
 						SendNotificationToPlayer(GameRoom->Host, OtherTurn);
 						SendNotificationToPlayer(GameRoom->Guest, YourTurn);
 					}
@@ -290,6 +294,8 @@ void ANBGameModeBase::OnGameTimerElapsed(int32 RoomId)
 		FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
 		if (GameRoom)
 		{
+			ANBPlayerController* HasTurnPlayer = nullptr;
+			ANBPlayerController* NextPlayer = nullptr;
 			ANBPlayerState* HasTurnPlayerState = nullptr;
 			ANBPlayerState* NextPlayerState = nullptr;
 			
@@ -297,22 +303,35 @@ void ANBGameModeBase::OnGameTimerElapsed(int32 RoomId)
 			{
 				HasTurnPlayerState = GameRoom->HostState;
 				NextPlayerState = GameRoom->GuestState;
+				HasTurnPlayer = GameRoom->Host;
+				NextPlayer = GameRoom->Guest;
 			}
 			else if (GameRoom->GuestState && GameRoom->GuestState->GetPlayerGameState() && GameRoom->GuestState->GetPlayerGameState()->HasTurn)
 			{
 				HasTurnPlayerState = GameRoom->GuestState;
 				NextPlayerState = GameRoom->HostState;
+				HasTurnPlayer = GameRoom->Guest;
+				NextPlayer = GameRoom->Host;
 			}
 
 			if (IsValid(HasTurnPlayerState) && IsValid(NextPlayerState))
 			{
 				if (HasTurnPlayerState->GetPlayerGameState() && NextPlayerState->GetPlayerGameState())
 				{
-					bool IsDone = HasTurnPlayerState->GetPlayerGameState()->ReduceTimeAndCheck(1.0f);
-					if (IsDone)
+					bool IsTurnEnd = HasTurnPlayerState->GetPlayerGameState()->ReduceTimeAndCheck(1.0f);
+					if (IsTurnEnd)
 					{
 						HasTurnPlayerState->GetPlayerGameState()->ReleaseTurn();
 						NextPlayerState->GetPlayerGameState()->GetTurn(TurnDuration);
+
+						int32 RemainChance = GameRoom->HostState->GetPlayerGameState()->RemainChance;
+						FString YourTurnString = FString::Printf(TEXT("Your Turn!: Remain Chance: %d"), RemainChance);
+						FText YourTurn = FText::FromString(YourTurnString);
+						FString OtherTurnString(TEXT("Opponent Turn..."));
+						FText OtherTurn = FText::FromString(OtherTurnString);
+
+						SendNotificationToPlayer(NextPlayer, YourTurn);
+						SendNotificationToPlayer(HasTurnPlayer, OtherTurn);
 					}
 					GameSynchronization(RoomId);
 				}
