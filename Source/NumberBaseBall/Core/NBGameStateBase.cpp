@@ -18,7 +18,7 @@ int32 ANBGameStateBase::MakeGameRoom(ANBPlayerController* HostPlayer)
 	FGameRoom& NewRoom = GameRooms.AddDefaulted_GetRef();
 	NewRoom.RoomId = FGameRoom::NextRoomId++;
 	NewRoom.Host = HostPlayer;
-	NewRoom.HostState = HostPlayer->GetPlayerState<ANBPlayerState>();
+	NewRoom.HostState = HostPlayer->GetValidPlayerState<ANBPlayerState>();
 
 	FString FormatText = FString::Printf(TEXT("[%d] %s's Room"), NewRoom.RoomId, *NickName);
 	NewRoom.RoomName = FText::FromString(FormatText);
@@ -38,7 +38,7 @@ bool ANBGameStateBase::JoinGameRoom(ANBPlayerController* GuestPlayer, int32 Targ
 		else
 		{
 			GameRoom->Guest = GuestPlayer;
-			GameRoom->GuestState = GuestPlayer->GetPlayerState<ANBPlayerState>();
+			GameRoom->GuestState = GuestPlayer->GetValidPlayerState<ANBPlayerState>();
 			return true;
 		}
 	}
@@ -80,8 +80,7 @@ void ANBGameStateBase::OnRep_GameRooms()
 		{
 			NBPlayerController->UpdateRooms(GameRooms);
 
-			ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
-			if (IsValid(NBPlayerState))
+			if (ANBPlayerState* NBPlayerState = NBPlayerController->GetValidPlayerState<ANBPlayerState>())
 			{
 				int32 RoomId = NBPlayerState->GetRoomId();
 				FGameRoom* GameRoom = GetGameRoom(RoomId);

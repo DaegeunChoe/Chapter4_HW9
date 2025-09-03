@@ -49,8 +49,7 @@ TArray<TObjectPtr<ANBPlayerController>> ANBGameModeBase::GetPlayersInLobby() con
 	TArray<TObjectPtr<ANBPlayerController>> InLobby;
 	for (ANBPlayerController* PlayerController : PlayerList)
 	{
-		ANBPlayerState* NBPlayerState = PlayerController->GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState))
+		if (ANBPlayerState* NBPlayerState = PlayerController->GetValidPlayerState<ANBPlayerState>())
 		{
 			if (NBPlayerState->GetPlayerLocation() == EPlayerLocation::Lobby)
 			{
@@ -66,8 +65,7 @@ void ANBGameModeBase::MakeRoom(ANBPlayerController* HostPlayer)
 	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
 	if (IsValid(NBGameStateBase))
 	{
-		ANBPlayerState* NBPlayerState = HostPlayer->GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState))
+		if (ANBPlayerState* NBPlayerState = HostPlayer->GetValidPlayerState<ANBPlayerState>())
 		{
 			int32 NewRoomId = NBGameStateBase->MakeGameRoom(HostPlayer);
 			if (NewRoomId != -1)
@@ -84,8 +82,7 @@ void ANBGameModeBase::JoinRoom(ANBPlayerController* GuestPlayer, int32 RoomId)
 	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
 	if (IsValid(NBGameStateBase))
 	{
-		ANBPlayerState* NBPlayerState = GuestPlayer->GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState))
+		if (ANBPlayerState* NBPlayerState = GuestPlayer->GetValidPlayerState<ANBPlayerState>())
 		{
 			bool IsSuccess = NBGameStateBase->JoinGameRoom(GuestPlayer, RoomId);
 			if (IsSuccess)
@@ -102,8 +99,7 @@ void ANBGameModeBase::LeaveRoom(ANBPlayerController* Exiting)
 	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
 	if (IsValid(NBGameStateBase))
 	{
-		ANBPlayerState* NBPlayerState = Exiting->GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState))
+		if (ANBPlayerState* NBPlayerState = Exiting->GetValidPlayerState<ANBPlayerState>())
 		{
 			// TODO: 리팩토링할 시간이 있다면..
 			int32 RoomId = NBPlayerState->GetRoomId();
@@ -144,8 +140,7 @@ void ANBGameModeBase::GuessNumber(ANBPlayerController* Player, const FText& Gues
 	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
 	if (IsValid(NBGameStateBase))
 	{
-		ANBPlayerState* PlayerState = Player->GetPlayerState<ANBPlayerState>();
-		if (IsValid(PlayerState))
+		if (ANBPlayerState* PlayerState = Player->GetValidPlayerState<ANBPlayerState>())
 		{
 			int32 RoomId = PlayerState->GetRoomId();
 			FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
@@ -196,8 +191,7 @@ void ANBGameModeBase::StartGame(ANBPlayerController* HostPlayer)
 	ANBGameStateBase* NBGameStateBase = GetGameState<ANBGameStateBase>();
 	if (IsValid(NBGameStateBase))
 	{
-		ANBPlayerState* HostPlayerState = HostPlayer->GetPlayerState<ANBPlayerState>();
-		if (IsValid(HostPlayerState))
+		if (ANBPlayerState* HostPlayerState = HostPlayer->GetValidPlayerState<ANBPlayerState>())
 		{
 			int32 RoomId = HostPlayerState->GetRoomId();
 			FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
@@ -311,8 +305,7 @@ void ANBGameModeBase::InitPlayerStateUsingOptions(APlayerController* PlayerContr
 	{
 		UE_LOG(LogTemp, Log, TEXT("ANBGameModeBase::Login, Options: %s"), *Options);
 
-		ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState))
+		if (ANBPlayerState* NBPlayerState = NBPlayerController->GetValidPlayerState<ANBPlayerState>())
 		{
 			FString ParseOption;
 			FString NickName;

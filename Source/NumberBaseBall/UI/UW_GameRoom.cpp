@@ -160,8 +160,7 @@ void UUW_GameRoom::UpdateGameRoom(const FGameRoom* GameRoomInfo)
 	ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
 	if (IsValid(NBPlayerController))
 	{
-		ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState))
+		if (ANBPlayerState* NBPlayerState = NBPlayerController->GetValidPlayerState<ANBPlayerState>())
 		{
 			if (GameRoomInfo)
 			{
@@ -197,7 +196,7 @@ void UUW_GameRoom::OnCommitChatMessage(const FText& Text, ETextCommit::Type Comm
 			}
 			else
 			{
-				ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
+				ANBPlayerState* NBPlayerState = NBPlayerController->GetValidPlayerState<ANBPlayerState>();
 				FString NickName = IsValid(NBPlayerState) ? NBPlayerState->GetNickName() : "NONE";
 				FString FormatString = FString::Printf(TEXT("%s: %s"), *NickName, *Text.ToString());
 				FText ChatMessage = FText::FromString(FormatString);
@@ -237,8 +236,7 @@ void UUW_GameRoom::SetTimerText()
 		ANBPlayerController* NBPlayerController = GetOwningPlayer<ANBPlayerController>();
 		if (IsValid(NBPlayerController))
 		{
-			ANBPlayerState* NBPlayerState = NBPlayerController->GetPlayerState<ANBPlayerState>();
-			if (IsValid(NBPlayerState))
+			if (ANBPlayerState* NBPlayerState = NBPlayerController->GetValidPlayerState<ANBPlayerState>())
 			{
 				RemainTime = NBPlayerState->GetPlayerGameState()->RemainTime;
 				RemainTime = FMath::Clamp(RemainTime, 0.0f, RemainTime);

@@ -77,8 +77,7 @@ void ANBPlayerController::UpdateGameRoomInfo(const FGameRoom* GameRoom)
 
 const FString& ANBPlayerController::GetNickName()
 {
-	ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
-	if (IsValid(NBPlayerState))
+	if (ANBPlayerState* NBPlayerState = GetValidPlayerState<ANBPlayerState>())
 	{
 		return NBPlayerState->GetNickName();
 	}
@@ -89,8 +88,7 @@ void ANBPlayerController::ServerRPCSendChatMessage_Implementation(const FText& C
 {
 	if (HasAuthority())
 	{
-		ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState))
+		if (ANBPlayerState* NBPlayerState = GetValidPlayerState<ANBPlayerState>())
 		{
 			if (NBPlayerState->GetPlayerLocation() == EPlayerLocation::Lobby)
 			{
@@ -129,7 +127,7 @@ void ANBPlayerController::ServerRPCMakeRoom_Implementation()
 {
 	if (HasAuthority())
 	{
-		if (ANBGameModeBase* NBGameModeBase = GetVaildGameMode<ANBGameModeBase>())
+		if (ANBGameModeBase* NBGameModeBase = GetValidGameMode<ANBGameModeBase>())
 		{
 			NBGameModeBase->MakeRoom(this);
 		}
@@ -140,7 +138,7 @@ void ANBPlayerController::ServerRPCJoinRoom_Implementation(int32 RoomId)
 {
 	if (HasAuthority())
 	{
-		if (ANBGameModeBase* NBGameModeBase = GetVaildGameMode<ANBGameModeBase>())
+		if (ANBGameModeBase* NBGameModeBase = GetValidGameMode<ANBGameModeBase>())
 		{
 			NBGameModeBase->JoinRoom(this, RoomId);
 		}
@@ -151,7 +149,7 @@ void ANBPlayerController::ServerRPCLeaveRoom_Implementation()
 {
 	if (HasAuthority())
 	{
-		if (ANBGameModeBase* NBGameModeBase = GetVaildGameMode<ANBGameModeBase>())
+		if (ANBGameModeBase* NBGameModeBase = GetValidGameMode<ANBGameModeBase>())
 		{
 			NBGameModeBase->LeaveRoom(this);
 		}
@@ -162,7 +160,7 @@ void ANBPlayerController::ServerRPCStartGame_Implementation()
 {
 	if (HasAuthority())
 	{
-		if (ANBGameModeBase* NBGameModeBase = GetVaildGameMode<ANBGameModeBase>())
+		if (ANBGameModeBase* NBGameModeBase = GetValidGameMode<ANBGameModeBase>())
 		{
 			NBGameModeBase->StartGame(this);
 		}
@@ -173,7 +171,7 @@ void ANBPlayerController::ServerRPCSendGuessNumber_Implementation(const FText& G
 {
 	if (HasAuthority())
 	{
-		if (ANBGameModeBase* NBGameModeBase = GetVaildGameMode<ANBGameModeBase>())
+		if (ANBGameModeBase* NBGameModeBase = GetValidGameMode<ANBGameModeBase>())
 		{
 			NBGameModeBase->GuessNumber(this, GuessNumberText);
 		}
@@ -208,8 +206,7 @@ void ANBPlayerController::ClientRPCGuestLeavesRoom_Implementation()
 {
 	if (!HasAuthority())
 	{
-		ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
-		if (IsValid(NBPlayerState))
+		if (ANBPlayerState* NBPlayerState = GetValidPlayerState<ANBPlayerState>())
 		{
 			NBPlayerState->NotifyToLocalPlayerController();
 		}
@@ -248,7 +245,7 @@ void ANBPlayerController::BroadcastToLobby(const FText& ChatMessage)
 {
 	if (HasAuthority())
 	{
-		if (ANBGameModeBase* NBGameModeBase = GetVaildGameMode<ANBGameModeBase>())
+		if (ANBGameModeBase* NBGameModeBase = GetValidGameMode<ANBGameModeBase>())
 		{
 			TArray<TObjectPtr<ANBPlayerController>> PlayerList = NBGameModeBase->GetPlayersInLobby();
 			for (ANBPlayerController* PlayerController : PlayerList)
@@ -263,10 +260,9 @@ void ANBPlayerController::BroadcstToGameRoom(const FText& ChatMessage)
 {
 	if (HasAuthority())
 	{
-		if (ANBGameStateBase* NBGameStateBase = GetVaildGameState<ANBGameStateBase>())
+		if (ANBGameStateBase* NBGameStateBase = GetValidGameState<ANBGameStateBase>())
 		{
-			ANBPlayerState* NBPlayerState = GetPlayerState<ANBPlayerState>();
-			if (IsValid(NBPlayerState))
+			if (ANBPlayerState* NBPlayerState = GetValidPlayerState<ANBPlayerState>())
 			{
 				int32 RoomId = NBPlayerState->GetRoomId();
 				FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);

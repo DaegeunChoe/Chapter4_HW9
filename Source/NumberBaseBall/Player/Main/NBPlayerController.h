@@ -58,6 +58,15 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientRPCGuestLeavesRoom();
 
+	template <typename T>
+	T* GetValidGameMode();
+
+	template <typename T>
+	T* GetValidGameState();
+
+	template <typename T>
+	T* GetValidPlayerState();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NBPlayerController|Widget")
 	TSubclassOf<UUW_Lobby> LobbyWidgetClass;
@@ -83,13 +92,6 @@ private:
 	template <typename T>
 	T* CheckAndCreateWidget(TSubclassOf<UUserWidget> WidgetClass);
 
-	template <typename T>
-	T* GetVaildGameMode();
-
-	template <typename T>
-	T* GetVaildGameState();
-
-
 	static FString UnknownNickName;
 };
 
@@ -104,7 +106,7 @@ inline T* ANBPlayerController::CheckAndCreateWidget(TSubclassOf<UUserWidget> Wid
 }
 
 template<typename T>
-inline T* ANBPlayerController::GetVaildGameMode()
+inline T* ANBPlayerController::GetValidGameMode()
 {
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(this);
 	if (GameMode)
@@ -119,7 +121,7 @@ inline T* ANBPlayerController::GetVaildGameMode()
 }
 
 template<typename T>
-inline T* ANBPlayerController::GetVaildGameState()
+inline T* ANBPlayerController::GetValidGameState()
 {
 	AGameStateBase* GameState = UGameplayStatics::GetGameState(this);
 	if (GameState)
@@ -129,6 +131,17 @@ inline T* ANBPlayerController::GetVaildGameState()
 		{
 			return Result;
 		}
+	}
+	return nullptr;
+}
+
+template<typename T>
+inline T* ANBPlayerController::GetValidPlayerState()
+{
+	T* Result = GetPlayerState<T>();
+	if (IsValid(Result))
+	{
+		return Result;
 	}
 	return nullptr;
 }
