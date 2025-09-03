@@ -1,7 +1,7 @@
 #include "Core/NBGameModeBase.h"
 #include "Core/NBGameStateBase.h"
-#include "Player/NBPlayerController.h"
-#include "Player/NBPlayerState.h"
+#include "Player/Main/NBPlayerController.h"
+#include "Player/Main/NBPlayerState.h"
 
 int32 FGameRoom::NextRoomId = 0;
 

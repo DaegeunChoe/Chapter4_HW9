@@ -1,6 +1,6 @@
 #include "Core/NBGameStateBase.h"
-#include "Player/NBPlayerController.h"
-#include "Player/NBPlayerState.h"
+#include "Player/Main/NBPlayerController.h"
+#include "Player/Main/NBPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
