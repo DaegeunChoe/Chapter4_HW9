@@ -153,6 +153,12 @@ void UUW_Lobby::OnCommitChatMessage(const FText& Text, ETextCommit::Type CommitM
 		if (IsValid(InputEditableTextBox))
 		{
 			InputEditableTextBox->SetText(FText());
+
+			GetWorld()->GetTimerManager().SetTimerForNextTick([&]() {
+				if (IsValid(InputEditableTextBox))
+				{
+					InputEditableTextBox->SetKeyboardFocus();
+				}});
 		}
 	}
 }

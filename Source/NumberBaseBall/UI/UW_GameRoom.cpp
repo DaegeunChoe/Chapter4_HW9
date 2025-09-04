@@ -206,6 +206,12 @@ void UUW_GameRoom::OnCommitChatMessage(const FText& Text, ETextCommit::Type Comm
 		if (IsValid(InputEditableTextBox))
 		{
 			InputEditableTextBox->SetText(FText());
+
+			GetWorld()->GetTimerManager().SetTimerForNextTick([&]() {
+				if (IsValid(InputEditableTextBox))
+				{
+					InputEditableTextBox->SetKeyboardFocus();
+				}});
 		}
 	}
 }

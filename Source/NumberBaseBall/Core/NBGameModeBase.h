@@ -69,7 +69,7 @@ private:
 	float TurnDuration = 15.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "NBGameModeBase|ServerConfiguration")
-	float TimerInterval = 0.5f;
+	float TimerInterval = 1.0f;
 
 	UPROPERTY()
 	TObjectPtr<ANBGameStateBase> CachedGameState;
