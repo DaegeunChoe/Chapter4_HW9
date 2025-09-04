@@ -12,7 +12,7 @@ Windows x64, Unreal Engine 5.5.4
 
 ## Youtube
 
-[![ALTTEXT](https://img.youtube.com/vi/ISnB9HKyhkM/0.jpg)](https://www.youtube.com/watch?v=ISnB9HKyhkM)
+[![ALTTEXT](https://img.youtube.com/vi/GCOOdHE8RN8/0.jpg)](https://www.youtube.com/watch?v=GCOOdHE8RN8)
 
 
 ## 추가로 구현한 것
