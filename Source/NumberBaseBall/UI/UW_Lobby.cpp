@@ -114,7 +114,7 @@ void UUW_Lobby::UpdateRoomList(const TArray<FGameRoom>& GameRooms)
 			NewItem->SetRoomId(GameRoom.GetRoomId());
 			NewItem->RoomNameTextBlock->SetText(GameRoom.GetRoomName());
 
-			bool CanJoin = GameRoom.CanJoin();
+			bool CanJoin = GameRoom.CanJoinClient();
 			if (CanJoin)
 			{
 				NewItem->EnableJoinButton();

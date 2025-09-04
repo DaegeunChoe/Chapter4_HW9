@@ -44,6 +44,10 @@ public:
 	{
 		return (Guest == nullptr) && (!IsPlaying);
 	}
+	bool CanJoinClient() const
+	{
+		return (GuestState == nullptr) && (!IsPlaying);
+	}
 
 	bool HostHasTurn();
 	bool GuestHasTurn();
