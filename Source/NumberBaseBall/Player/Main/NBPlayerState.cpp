@@ -1,6 +1,7 @@
 #include "Player/Main/NBPlayerState.h"
 #include "Player/Main/NBPlayerController.h"
 #include "Core/NBGameStateBase.h"
+#include "Core/NBGameRoom.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
@@ -100,7 +101,10 @@ void ANBPlayerState::TryNotifyToLocalPlayerController()
 					FGameRoom* GameRoom = NBGameStateBase->GetGameRoom(RoomId);
 					if (GameRoom)
 					{
-						NBPlayerController->UpdateGameRoomInfo(GameRoom);
+						if (GameRoom->IsHost(NBPlayerController) || GameRoom->IsGuest(NBPlayerController))
+						{
+							NBPlayerController->UpdateGameRoomInfo(GameRoom);
+						}
 					}
 					else
 					{

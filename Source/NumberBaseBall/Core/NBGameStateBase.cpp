@@ -54,15 +54,25 @@ void ANBGameStateBase::OnRep_GameRooms()
 		{
 			NBPlayerController->UpdateRooms(GameRooms);
 
-			if (ANBPlayerState* NBPlayerState = NBPlayerController->GetValidPlayerState<ANBPlayerState>())
+			for (FGameRoom& Room : GameRooms)
 			{
-				int32 RoomId = NBPlayerState->GetRoomId();
-				FGameRoom* GameRoom = GetGameRoom(RoomId);
-				if (GameRoom)
+				if (Room.IsHost(NBPlayerController) || Room.IsGuest(NBPlayerController))
 				{
-					NBPlayerController->UpdateGameRoomInfo(GameRoom);
+					NBPlayerController->UpdateGameRoomInfo(&Room);
 				}
 			}
+
+			//if (ANBPlayerState* NBPlayerState = NBPlayerController->GetValidPlayerState<ANBPlayerState>())
+			//{
+			//	int32 RoomId = NBPlayerState->GetRoomId();
+			//	GEngine->AddOnScreenDebugMessage(
+			//		-1, 10, FColor::White, FString::Printf(TEXT("OnRep_GameRooms My RoomIs Id %d"), RoomId));
+			//	FGameRoom* GameRoom = GetGameRoom(RoomId);
+			//	if (GameRoom)
+			//	{
+			//		NBPlayerController->UpdateGameRoomInfo(GameRoom);
+			//	}
+			//}
 		}
 	}
 }

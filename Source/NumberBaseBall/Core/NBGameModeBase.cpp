@@ -82,6 +82,7 @@ void ANBGameModeBase::MakeRoom(ANBPlayerController* HostPlayer)
 		{
 			if (ANBPlayerState* HostPlayerState = HostPlayer->GetValidPlayerState<ANBPlayerState>())
 			{
+				UE_LOG(LogTemp, Display, TEXT("[Server] MakeRoom %d"), NewGameRoom->GetRoomId());
 				HostPlayerState->SetPlayerLocationToGameRoom(NewGameRoom->GetRoomId());
 				HostPlayer->ClientRPCMakeRoom();
 			}
@@ -100,6 +101,7 @@ void ANBGameModeBase::JoinRoom(ANBPlayerController* GuestPlayer, int32 RoomId)
 
 			if (ANBPlayerState* GuestPlayerState = GuestPlayer->GetValidPlayerState<ANBPlayerState>())
 			{
+				UE_LOG(LogTemp, Display, TEXT("[Server] JoinRoom %d"), GameRoom->GetRoomId());
 				GuestPlayerState->SetPlayerLocationToGameRoom(RoomId);
 				GuestPlayer->ClientRPCMakeRoom();
 			}
